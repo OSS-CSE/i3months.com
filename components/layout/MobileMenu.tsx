@@ -1,0 +1,166 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { NavigationItem } from '@/lib/payload/types';
+
+interface MobileMenuProps {
+  navigation: NavigationItem[];
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+interface MobileNavigationItemProps {
+  item: NavigationItem;
+  currentPath: string;
+  level: number;
+  onNavigate: () => void;
+}
+
+/**
+ * Recursive mobile navigation item component
+ */
+function MobileNavigationItem({ item, currentPath, level, onNavigate }: MobileNavigationItemProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const hasChildren = item.children && item.children.length > 0;
+  const isActive = item.path === currentPath;
+  const indentClass = level > 0 ? `pl-${level * 4}` : '';
+
+  const handleToggle = () => {
+    if (hasChildren) {
+      setIsExpanded(!isExpanded);
+    }
+  };
+
+  return (
+    <div className="mb-1">
+      <div className={`flex items-center ${indentClass}`}>
+        {hasChildren && (
+          <button
+            onClick={handleToggle}
+            className="mr-2 text-gray-500 dark:text-gray-400 p-1"
+            aria-label={isExpanded ? 'Collapse' : 'Expand'}
+          >
+            <svg
+              className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        )}
+        {item.path ? (
+          <Link
+            href={`/${item.path}`}
+            onClick={onNavigate}
+            className={`flex-1 px-4 py-3 rounded-md text-base transition-colors ${
+              isActive
+                ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+            } ${!hasChildren ? 'ml-6' : ''}`}
+          >
+            {item.icon && <span className="mr-2">{item.icon}</span>}
+            {item.name}
+          </Link>
+        ) : (
+          <div
+            className={`flex-1 px-4 py-3 text-base font-semibold text-gray-900 dark:text-gray-100 ${
+              !hasChildren ? 'ml-6' : ''
+            }`}
+          >
+            {item.icon && <span className="mr-2">{item.icon}</span>}
+            {item.name}
+          </div>
+        )}
+      </div>
+      {hasChildren && isExpanded && (
+        <div className="mt-1">
+          {item.children!.map((child, index) => (
+            <MobileNavigationItem
+              key={`${child.name}-${index}`}
+              item={child}
+              currentPath={currentPath}
+              level={level + 1}
+              onNavigate={onNavigate}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Mobile menu with hamburger button and slide-out drawer
+ * Visible only on mobile devices
+ */
+export function MobileMenu({ navigation, isOpen, onClose }: MobileMenuProps) {
+  const pathname = usePathname();
+  const currentPath = pathname === '/' ? '' : pathname.slice(1);
+
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
+  return (
+    <>
+      {/* Overlay backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Slide-out drawer */}
+      <div
+        className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-900 z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        } overflow-y-auto`}
+      >
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Navigation</h2>
+            <button
+              onClick={onClose}
+              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+              aria-label="Close menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          <nav>
+            {navigation.map((item, index) => (
+              <MobileNavigationItem
+                key={`${item.name}-${index}`}
+                item={item}
+                currentPath={currentPath}
+                level={0}
+                onNavigate={onClose}
+              />
+            ))}
+          </nav>
+        </div>
+      </div>
+    </>
+  );
+}
