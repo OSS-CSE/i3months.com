@@ -9,12 +9,77 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: 'var(--color-primary)',
-        secondary: 'var(--color-secondary)',
+        primary: {
+          DEFAULT: 'var(--color-primary)',
+          hover: 'var(--color-primary-hover)',
+        },
+        secondary: {
+          DEFAULT: 'var(--color-secondary)',
+          hover: 'var(--color-secondary-hover)',
+        },
         background: 'var(--color-background)',
-        text: 'var(--color-text)',
-        'sidebar-bg': 'var(--color-sidebar-bg)',
-        'code-bg': 'var(--color-code-bg)',
+        text: {
+          DEFAULT: 'var(--color-text)',
+          muted: 'var(--color-text-muted)',
+        },
+        sidebar: {
+          bg: 'var(--color-sidebar-bg)',
+          text: 'var(--color-sidebar-text)',
+          hover: 'var(--color-sidebar-hover)',
+          active: 'var(--color-sidebar-active)',
+        },
+        code: {
+          bg: 'var(--color-code-bg)',
+          text: 'var(--color-code-text)',
+        },
+        border: 'var(--color-border)',
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            '--tw-prose-body': 'var(--color-text)',
+            '--tw-prose-headings': 'var(--color-text)',
+            '--tw-prose-links': 'var(--color-primary)',
+            '--tw-prose-bold': 'var(--color-text)',
+            '--tw-prose-code': 'var(--color-code-text)',
+            '--tw-prose-pre-bg': 'var(--color-code-bg)',
+            '--tw-prose-quotes': 'var(--color-text-muted)',
+            color: 'var(--color-text)',
+            maxWidth: 'none',
+            a: {
+              color: 'var(--color-primary)',
+              textDecoration: 'none',
+              '&:hover': {
+                color: 'var(--color-primary-hover)',
+              },
+            },
+            code: {
+              color: 'var(--color-code-text)',
+              backgroundColor: 'var(--color-code-bg)',
+              padding: '0.25rem 0.375rem',
+              borderRadius: '0.25rem',
+              fontWeight: '400',
+            },
+            'code::before': {
+              content: '""',
+            },
+            'code::after': {
+              content: '""',
+            },
+            pre: {
+              backgroundColor: 'var(--color-code-bg)',
+              color: 'var(--color-code-text)',
+            },
+          },
+        },
+      },
+      screens: {
+        xs: '475px',
+        sm: '640px',
+        md: '768px',
+        lg: '1024px',
+        xl: '1280px',
+        '2xl': '1536px',
       },
     },
   },
