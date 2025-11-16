@@ -39,11 +39,12 @@ function MobileNavigationItem({ item, currentPath, level, onNavigate }: MobileNa
         {hasChildren && (
           <button
             onClick={handleToggle}
-            className="mr-2 text-gray-500 dark:text-gray-400 p-1"
+            className="mr-2 text-gray-500 dark:text-gray-400 p-2 -ml-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 touch-manipulation"
             aria-label={isExpanded ? 'Collapse' : 'Expand'}
+            aria-expanded={isExpanded}
           >
             <svg
-              className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+              className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -56,11 +57,11 @@ function MobileNavigationItem({ item, currentPath, level, onNavigate }: MobileNa
           <Link
             href={`/${item.path}`}
             onClick={onNavigate}
-            className={`flex-1 px-4 py-3 rounded-md text-base transition-colors ${
+            className={`flex-1 px-4 py-3 rounded-md text-base transition-colors touch-manipulation ${
               isActive
                 ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-            } ${!hasChildren ? 'ml-6' : ''}`}
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700'
+            } ${!hasChildren ? 'ml-7' : ''}`}
           >
             {item.icon && <span className="mr-2">{item.icon}</span>}
             {item.name}
@@ -68,7 +69,7 @@ function MobileNavigationItem({ item, currentPath, level, onNavigate }: MobileNa
         ) : (
           <div
             className={`flex-1 px-4 py-3 text-base font-semibold text-gray-900 dark:text-gray-100 ${
-              !hasChildren ? 'ml-6' : ''
+              !hasChildren ? 'ml-7' : ''
             }`}
           >
             {item.icon && <span className="mr-2">{item.icon}</span>}
@@ -118,9 +119,12 @@ export function MobileMenu({ navigation, isOpen, onClose }: MobileMenuProps) {
       {/* Overlay backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden touch-manipulation"
           onClick={onClose}
+          onTouchEnd={onClose}
           aria-hidden="true"
+          role="button"
+          tabIndex={-1}
         />
       )}
 
@@ -135,7 +139,7 @@ export function MobileMenu({ navigation, isOpen, onClose }: MobileMenuProps) {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Navigation</h2>
             <button
               onClick={onClose}
-              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 active:bg-gray-100 dark:active:bg-gray-800 rounded-md transition-colors touch-manipulation"
               aria-label="Close menu"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
