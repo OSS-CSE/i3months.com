@@ -57,7 +57,7 @@ export function CodeBlock({ language, code }: CodeBlockProps) {
         </button>
       </div>
       <pre className="bg-gray-900 dark:bg-black p-4 rounded-b-lg overflow-x-auto">
-        <code className="text-sm font-mono text-gray-100 block">{code}</code>
+        <code className="text-sm font-mono text-gray-100">{code}</code>
       </pre>
     </div>
   );
