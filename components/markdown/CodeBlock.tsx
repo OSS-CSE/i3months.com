@@ -56,7 +56,7 @@ export function CodeBlock({ language, code }: CodeBlockProps) {
           {copied ? '✓ Copied' : 'Copy'}
         </button>
       </div>
-      <pre className="bg-gray-900 dark:bg-black p-4 rounded-b-lg overflow-x-auto">
+      <pre className="bg-gray-900 dark:bg-black p-4 rounded-b-lg overflow-x-auto m-0">
         <code className="text-sm font-mono text-gray-100">{code}</code>
       </pre>
     </div>

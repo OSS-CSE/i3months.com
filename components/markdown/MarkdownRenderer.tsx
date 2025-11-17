@@ -127,7 +127,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
             </code>
           );
         },
-        pre: ({ children }) => <div className="mb-4">{children}</div>,
+        pre: ({ children }) => <>{children}</>,
         img: ({ src, alt }) => (
           <img src={src} alt={alt || ''} className="max-w-full h-auto rounded-lg my-4" />
         ),
