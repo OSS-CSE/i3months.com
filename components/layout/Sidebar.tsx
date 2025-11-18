@@ -202,7 +202,7 @@ export function Sidebar({ navigation }: SidebarProps) {
 
   const MIN_WIDTH = 200;
   const MAX_WIDTH = 600;
-  const COLLAPSE_THRESHOLD = 150; // 이 너비 이하로 드래그하면 자동 collapse
+  const COLLAPSE_THRESHOLD = 150; // Auto-collapse when dragged below this width
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -210,17 +210,17 @@ export function Sidebar({ navigation }: SidebarProps) {
 
       const newWidth = e.clientX;
 
-      // 너비가 collapse threshold 이하로 내려가면 collapse
+      // Collapse sidebar when width goes below threshold
       if (newWidth < COLLAPSE_THRESHOLD) {
         setSidebarCollapsed(true);
         setIsResizing(false);
-        // 즉시 cursor와 userSelect 리셋
+        // Reset cursor and userSelect immediately
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
         return;
       }
 
-      // 최소/최대 너비 제한
+      // Enforce min/max width constraints
       if (newWidth >= MIN_WIDTH && newWidth <= MAX_WIDTH) {
         setSidebarWidth(newWidth);
         setSidebarCollapsed(false);
@@ -243,7 +243,7 @@ export function Sidebar({ navigation }: SidebarProps) {
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
-      // cleanup 시에도 리셋
+      // Reset on cleanup as well
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
