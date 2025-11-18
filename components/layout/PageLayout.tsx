@@ -59,14 +59,10 @@ export function PageLayout({ navigation, children }: PageLayoutProps) {
 
   // Sync active tab with current URL when pathname changes
   useEffect(() => {
-    if (!activeTabId) {
-      console.log('[PageLayout] No active tab ID');
-      return;
-    }
+    if (!activeTabId) return;
 
     // Remove leading and trailing slashes
     const currentPath = pathname === '/' ? '' : pathname.slice(1).replace(/\/$/, '');
-    console.log('[PageLayout] pathname:', pathname, 'currentPath:', currentPath);
 
     // Find navigation item that matches current path
     const findNavItem = (items: NavigationItem[], path: string): NavigationItem | null => {
@@ -87,26 +83,16 @@ export function PageLayout({ navigation, children }: PageLayoutProps) {
     const { tabs, updateTabPath } = useTabStore.getState();
     const activeTab = tabs.find((tab) => tab.id === activeTabId);
 
-    console.log('[PageLayout] activeTab:', activeTab);
-    console.log('[PageLayout] navItem:', navItem);
-
-    if (!activeTab) {
-      console.log('[PageLayout] Active tab not found');
-      return;
-    }
+    if (!activeTab) return;
 
     if (isHomePage) {
       // Home page - update to "Home"
       if (activeTab.path !== '') {
-        console.log('[PageLayout] Updating to Home');
         updateTabPath(activeTabId, '', 'Home');
       }
     } else if (navItem && activeTab.path !== currentPath) {
       // Regular page - update to match navigation item
-      console.log('[PageLayout] Updating tab:', activeTabId, 'to', navItem.name, currentPath);
       updateTabPath(activeTabId, currentPath, navItem.name);
-    } else {
-      console.log('[PageLayout] No update needed or navItem not found');
     }
   }, [pathname, activeTabId, navigation]);
 
