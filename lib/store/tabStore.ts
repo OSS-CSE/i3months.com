@@ -29,9 +29,9 @@ export const useTabStore = create<TabStore>()(
       addTab: (tab) => {
         const { tabs } = get();
 
-        // Create new tab with default title "Untitled"
+        // Create new tab with default title "New Tab"
         const newTab: Tab = {
-          title: tab?.title || 'Untitled',
+          title: tab?.title || 'New Tab',
           path: tab?.path || '',
           id: `tab-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
         };
