@@ -11,6 +11,8 @@ export interface Tab {
 interface TabStore {
   tabs: Tab[];
   activeTabId: string | null;
+  sidebarWidth: number;
+  sidebarCollapsed: boolean;
   addTab: (tab?: Omit<Tab, 'id'>) => string;
   removeTab: (id: string) => void;
   setActiveTab: (id: string) => void;
@@ -18,6 +20,8 @@ interface TabStore {
   updateTabScroll: (id: string, scrollPosition: number) => void;
   closeOtherTabs: (id: string) => void;
   closeTabsToRight: (id: string) => void;
+  setSidebarWidth: (width: number) => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
 }
 
 export const useTabStore = create<TabStore>()(
@@ -25,6 +29,8 @@ export const useTabStore = create<TabStore>()(
     (set, get) => ({
       tabs: [],
       activeTabId: null,
+      sidebarWidth: 256, // Default 256px (w-64)
+      sidebarCollapsed: false,
 
       addTab: (tab) => {
         const { tabs } = get();
@@ -100,6 +106,14 @@ export const useTabStore = create<TabStore>()(
           };
         });
       },
+
+      setSidebarWidth: (width) => {
+        set({ sidebarWidth: width });
+      },
+
+      setSidebarCollapsed: (collapsed) => {
+        set({ sidebarCollapsed: collapsed });
+      },
     }),
     {
       name: 'tab-storage',
@@ -111,6 +125,8 @@ export const useTabStore = create<TabStore>()(
           return rest;
         }),
         activeTabId: state.activeTabId,
+        sidebarWidth: state.sidebarWidth,
+        sidebarCollapsed: state.sidebarCollapsed,
       }),
     },
   ),
