@@ -23,9 +23,28 @@ export function TabBar() {
     router.push(`/${path}`);
   };
 
+  const closeTab = (tabId: string) => {
+    const wasClosingActiveTab = tabId === activeTabId;
+    const remainingTabs = tabs.filter((t) => t.id !== tabId);
+
+    removeTab(tabId);
+
+    // If no tabs remain, navigate to home
+    if (remainingTabs.length === 0) {
+      router.push('/');
+    } else if (wasClosingActiveTab && remainingTabs.length > 0) {
+      // If we closed the active tab, navigate to the new active tab
+      const index = tabs.findIndex((t) => t.id === tabId);
+      const newActiveTab = remainingTabs[Math.min(index, remainingTabs.length - 1)];
+      if (newActiveTab) {
+        router.push(`/${newActiveTab.path}`);
+      }
+    }
+  };
+
   const handleTabClose = (e: React.MouseEvent, tabId: string) => {
     e.stopPropagation();
-    removeTab(tabId);
+    closeTab(tabId);
   };
 
   const handleContextMenu = (e: React.MouseEvent, tabId: string) => {
@@ -117,10 +136,23 @@ export function TabBar() {
           </button>
         </>
       ) : (
-        <div className="flex items-center justify-center w-full py-2">
+        <>
+          {/* Default "New Tab" when no tabs exist */}
+          <div
+            onClick={handleNewTab}
+            className="group flex items-center gap-2 px-3 py-1.5 rounded-md cursor-pointer
+              transition-colors w-[180px] flex-shrink-0
+              bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm"
+          >
+            <span className="flex-1 truncate text-sm font-medium min-w-0">New Tab</span>
+          </div>
+
+          {/* New Tab Button */}
           <button
             onClick={handleNewTab}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition-colors"
+            className="flex-shrink-0 p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition-colors"
+            aria-label="New tab"
+            title="New tab"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -130,9 +162,8 @@ export function TabBar() {
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            <span>New Tab</span>
           </button>
-        </div>
+        </>
       )}
 
       {/* Context Menu */}
@@ -143,7 +174,7 @@ export function TabBar() {
         >
           <button
             onClick={() => {
-              removeTab(contextMenu.tabId);
+              closeTab(contextMenu.tabId);
               handleCloseContextMenu();
             }}
             className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"

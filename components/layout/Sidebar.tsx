@@ -71,6 +71,10 @@ function NavigationItemComponent({
       if (activeTabId) {
         // Update only the active tab's path
         updateTabPath(activeTabId, item.path, item.name);
+      } else {
+        // No active tab, create a new one
+        const { addTab } = useTabStore.getState();
+        addTab({ title: item.name, path: item.path });
       }
       router.push(`/${item.path}`);
     }
