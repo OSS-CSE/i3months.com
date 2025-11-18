@@ -14,7 +14,7 @@ export function TabBar() {
   const tabBarRef = useRef<HTMLDivElement>(null);
 
   const handleNewTab = () => {
-    addTab();
+    addTab({ title: 'New Tab', path: '' });
     router.push('/');
   };
 
@@ -27,18 +27,23 @@ export function TabBar() {
     const wasClosingActiveTab = tabId === activeTabId;
     const remainingTabs = tabs.filter((t) => t.id !== tabId);
 
-    removeTab(tabId);
-
-    // If this was the last tab, create a new "New Tab" and navigate to home
+    // If this was the last tab, create a new "New Tab" first, then remove the old one
     if (remainingTabs.length === 0) {
-      addTab();
-      router.push('/');
-    } else if (wasClosingActiveTab && remainingTabs.length > 0) {
-      // If we closed the active tab, navigate to the new active tab
-      const index = tabs.findIndex((t) => t.id === tabId);
-      const newActiveTab = remainingTabs[Math.min(index, remainingTabs.length - 1)];
-      if (newActiveTab) {
-        router.push(`/${newActiveTab.path}`);
+      // First remove the old tab
+      removeTab(tabId);
+      // Then create a new tab with explicit default values
+      addTab({ title: 'New Tab', path: '' });
+      router.replace('/');
+    } else {
+      removeTab(tabId);
+
+      if (wasClosingActiveTab && remainingTabs.length > 0) {
+        // If we closed the active tab, navigate to the new active tab
+        const index = tabs.findIndex((t) => t.id === tabId);
+        const newActiveTab = remainingTabs[Math.min(index, remainingTabs.length - 1)];
+        if (newActiveTab) {
+          router.push(`/${newActiveTab.path}`);
+        }
       }
     }
   };

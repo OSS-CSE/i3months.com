@@ -70,9 +70,12 @@ export function PageLayout({ navigation, children }: PageLayoutProps) {
 
     if (!activeTab) return;
 
-    // Home page - don't update, keep as "New Tab"
+    // Home page - reset to "New Tab" if the tab has a different path
     const isHomePage = currentPath === '';
     if (isHomePage) {
+      if (activeTab.path !== '') {
+        updateTabPath(activeTabId, '', 'New Tab');
+      }
       return;
     }
 
