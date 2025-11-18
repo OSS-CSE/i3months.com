@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { NavigationItem } from '@/lib/payload/types';
+import { useTabStore } from '@/lib/store/tabStore';
 
 /**
  * Props for the Sidebar component
@@ -43,6 +44,8 @@ interface NavigationItemComponentProps {
  */
 function NavigationItemComponent({ item, currentPath, level }: NavigationItemComponentProps) {
   const [isExpanded, setIsExpanded] = useState(true);
+  const router = useRouter();
+  const { activeTabId, updateTabPath } = useTabStore();
   const hasChildren = item.children && item.children.length > 0;
   const isActive = item.path === currentPath;
   const indentClass = level > 0 ? `ml-${level * 4}` : '';
@@ -51,6 +54,17 @@ function NavigationItemComponent({ item, currentPath, level }: NavigationItemCom
     if (hasChildren) {
       e.preventDefault();
       setIsExpanded(!isExpanded);
+    }
+  };
+
+  const handleLinkClick = (e: React.MouseEvent) => {
+    if (item.path) {
+      e.preventDefault();
+      if (activeTabId) {
+        // Update only the active tab's path
+        updateTabPath(activeTabId, item.path, item.name);
+      }
+      router.push(`/${item.path}`);
     }
   };
 
@@ -77,6 +91,7 @@ function NavigationItemComponent({ item, currentPath, level }: NavigationItemCom
         {item.path ? (
           <Link
             href={`/${item.path}`}
+            onClick={handleLinkClick}
             className={`flex-1 px-3 py-2 rounded-md text-sm transition-colors touch-manipulation ${
               isActive
                 ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium'
