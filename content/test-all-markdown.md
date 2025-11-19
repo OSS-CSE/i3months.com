@@ -270,11 +270,9 @@ HTML is an abbreviation for HyperText Markup Language.
 
 ## 16. Emoji
 
-:smile: :heart: :rocket: :fire: :+1:
+😀 😃 😄 😁 🚀 💻 🎉 ❤️ 🔥 👍
 
-😀 😃 😄 😁 🚀 💻 🎉
-
-## 17. Math Formulas (if supported)
+## 17. Math Formulas
 
 Inline formula: $E = mc^2$
 

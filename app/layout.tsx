@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import '@/styles/theme.css';
+import 'katex/dist/katex.min.css';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { payload } from '@/payload/config';
 import { validatePayload } from '@/lib/payload/validator';

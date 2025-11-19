@@ -1,6 +1,8 @@
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
+import rehypeKatex from 'rehype-katex';
 
 /**
  * Remark plugins configuration for Markdown processing
@@ -9,6 +11,8 @@ import rehypeSlug from 'rehype-slug';
 export const remarkPlugins = [
   // GitHub Flavored Markdown support (tables, strikethrough, task lists, etc.)
   remarkGfm,
+  // Math support for LaTeX-style formulas
+  remarkMath,
 ];
 
 /**
@@ -20,6 +24,8 @@ export const rehypePlugins = [
   rehypeSlug,
   // Syntax highlighting for code blocks
   rehypeHighlight,
+  // Render math formulas with KaTeX
+  rehypeKatex,
 ];
 
 /**
