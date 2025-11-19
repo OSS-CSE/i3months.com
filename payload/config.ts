@@ -33,7 +33,30 @@ export const payload: Payload = {
       path: 'intro',
     },
     {
-      name: 'Getting Started',
+      name: 'Tutorials',
+      children: [
+        {
+          name: 'Beginner',
+          children: [
+            {
+              name: 'First Steps',
+              path: 'tutorials/beginner/first-steps',
+            },
+          ],
+        },
+        {
+          name: 'Intermediate',
+          children: [
+            {
+              name: 'State Management',
+              path: 'tutorials/intermediate/state-management',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'Guides',
       children: [
         {
           name: 'Quick Start',
@@ -42,6 +65,54 @@ export const payload: Payload = {
         {
           name: 'Configuration',
           path: 'guides/configuration',
+        },
+        {
+          name: 'Advanced',
+          children: [
+            {
+              name: 'Deployment',
+              path: 'guides/advanced/deployment',
+            },
+            {
+              name: 'Performance',
+              path: 'guides/advanced/performance',
+            },
+            {
+              name: 'Security',
+              children: [
+                {
+                  name: 'Authentication',
+                  path: 'guides/advanced/security/authentication',
+                },
+                {
+                  name: 'Authorization',
+                  path: 'guides/advanced/security/authorization',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'API Reference',
+      children: [
+        {
+          name: 'Overview',
+          path: 'api/overview',
+        },
+        {
+          name: 'Endpoints',
+          children: [
+            {
+              name: 'Users API',
+              path: 'api/endpoints/users',
+            },
+            {
+              name: 'Posts API',
+              path: 'api/endpoints/posts',
+            },
+          ],
         },
       ],
     },
