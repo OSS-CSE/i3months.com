@@ -85,16 +85,18 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
           </p>
         ),
         ul: ({ children }) => (
-          <ul className="list-disc list-inside mb-4 space-y-2 text-sm sm:text-base lg:text-lg text-gray-700 dark:text-gray-300">
+          <ul className="list-disc pl-5 mb-4 text-sm sm:text-base lg:text-lg text-gray-700 dark:text-gray-300">
             {children}
           </ul>
         ),
         ol: ({ children }) => (
-          <ol className="list-decimal list-inside mb-4 space-y-2 text-sm sm:text-base lg:text-lg text-gray-700 dark:text-gray-300">
+          <ol className="list-decimal pl-5 mb-4 text-sm sm:text-base lg:text-lg text-gray-700 dark:text-gray-300">
             {children}
           </ol>
         ),
-        li: ({ children }) => <li className="ml-4 leading-relaxed">{children}</li>,
+        li: ({ children }) => (
+          <li className="leading-snug mb-1 [&>p]:mb-0 [&>p]:leading-snug">{children}</li>
+        ),
         a: ({ href, children }) => (
           <a
             href={href}
