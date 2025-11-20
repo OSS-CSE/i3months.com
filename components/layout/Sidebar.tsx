@@ -72,15 +72,18 @@ function NavigationItemComponent({
   const handleLinkClick = (e: React.MouseEvent) => {
     if (item.path) {
       e.preventDefault();
-      const { tabs } = useTabStore.getState();
+      const { tabs, addTab: storeAddTab } = useTabStore.getState();
 
       if (activeTabId) {
-        // Update only the active tab's path
+        // Always update the active tab's path and title
         updateTabPath(activeTabId, item.path, item.name);
       } else if (tabs.length === 0) {
         // No tabs at all, create a new one
-        const { addTab } = useTabStore.getState();
-        addTab({ title: item.name, path: item.path });
+        storeAddTab({ title: item.name, path: item.path });
+      } else if (tabs.length > 0) {
+        // Tabs exist but no active tab, update the first tab
+        const firstTab = tabs[0];
+        updateTabPath(firstTab.id, item.path, item.name);
       }
       router.push(`/${item.path}`);
     }
