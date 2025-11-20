@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { NavigationItem } from '@/lib/payload/types';
+import { useTabStore } from '@/lib/store/tabStore';
 
 /**
  * Props for the MobileMenu component
@@ -41,6 +42,8 @@ interface MobileNavigationItemProps {
  */
 function MobileNavigationItem({ item, currentPath, level, onNavigate }: MobileNavigationItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const router = useRouter();
+  const { activeTabId, tabs, updateTabPath, addTab } = useTabStore();
   const hasChildren = item.children && item.children.length > 0;
   const isActive = item.path === currentPath;
   const indentClass = level > 0 ? `pl-${level * 4}` : '';
@@ -48,6 +51,24 @@ function MobileNavigationItem({ item, currentPath, level, onNavigate }: MobileNa
   const handleToggle = () => {
     if (hasChildren) {
       setIsExpanded(!isExpanded);
+    }
+  };
+
+  const handleLinkClick = (e: React.MouseEvent) => {
+    if (item.path) {
+      e.preventDefault();
+
+      if (activeTabId) {
+        // Update only the active tab's path
+        updateTabPath(activeTabId, item.path, item.name);
+      } else if (tabs.length === 0) {
+        // No tabs at all, create a new one
+        addTab({ title: item.name, path: item.path });
+      }
+
+      // Navigate and close menu
+      router.push(`/${item.path}`);
+      onNavigate();
     }
   };
 
@@ -74,7 +95,7 @@ function MobileNavigationItem({ item, currentPath, level, onNavigate }: MobileNa
         {item.path ? (
           <Link
             href={`/${item.path}`}
-            onClick={onNavigate}
+            onClick={handleLinkClick}
             className={`flex-1 px-4 py-3 rounded-md text-base transition-colors touch-manipulation ${
               isActive
                 ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium'
