@@ -1,11 +1,18 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+export interface HistoryEntry {
+  path: string;
+  title: string;
+}
+
 export interface Tab {
   id: string;
   title: string;
   path: string;
   scrollPosition?: number;
+  history: HistoryEntry[]; // History stack for this tab
+  historyIndex: number; // Current position in history
 }
 
 interface TabStore {
@@ -15,10 +22,15 @@ interface TabStore {
   sidebarCollapsed: boolean;
   hasHydrated: boolean;
   setHasHydrated: (hydrated: boolean) => void;
-  addTab: (tab?: Omit<Tab, 'id'>) => string;
+  addTab: (tab?: Omit<Tab, 'id' | 'history' | 'historyIndex'>) => string;
   removeTab: (id: string) => void;
   setActiveTab: (id: string) => void;
   updateTabPath: (id: string, path: string, title: string) => void;
+  navigateInHistory: (id: string, path: string, title: string) => void;
+  goBack: (id: string) => { path: string; title: string } | null;
+  goForward: (id: string) => { path: string; title: string } | null;
+  canGoBack: (id: string) => boolean;
+  canGoForward: (id: string) => boolean;
   updateTabScroll: (id: string, scrollPosition: number) => void;
   closeOtherTabs: (id: string) => void;
   closeTabsToRight: (id: string) => void;
@@ -52,11 +64,15 @@ export const useTabStore = create<TabStore>()(
       addTab: (tab) => {
         const { tabs } = get();
 
-        // Create new tab with default title "New Tab"
+        // Create new tab with default title "New Tab" and initial history
+        const initialPath = tab?.path || '';
+        const initialTitle = tab?.title || 'New Tab';
         const newTab: Tab = {
-          title: tab?.title || 'New Tab',
-          path: tab?.path || '',
+          title: initialTitle,
+          path: initialPath,
           id: `tab-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+          history: [{ path: initialPath, title: initialTitle }],
+          historyIndex: 0,
         };
 
         set({
@@ -106,6 +122,87 @@ export const useTabStore = create<TabStore>()(
         set((state) => ({
           tabs: state.tabs.map((tab) => (tab.id === id ? { ...tab, path, title } : tab)),
         }));
+      },
+
+      navigateInHistory: (id, path, title) => {
+        set((state) => ({
+          tabs: state.tabs.map((tab) => {
+            if (tab.id !== id) return tab;
+
+            // If navigating to a new page (not back/forward), add to history
+            const currentEntry = tab.history[tab.historyIndex];
+            if (currentEntry.path === path) {
+              // Same page, just update title if needed
+              const updatedHistory = [...tab.history];
+              updatedHistory[tab.historyIndex] = { path, title };
+              return { ...tab, title, history: updatedHistory };
+            }
+
+            // Remove any forward history and add new entry
+            const newHistory = tab.history.slice(0, tab.historyIndex + 1);
+            newHistory.push({ path, title });
+
+            return {
+              ...tab,
+              path,
+              title,
+              history: newHistory,
+              historyIndex: newHistory.length - 1,
+            };
+          }),
+        }));
+      },
+
+      goBack: (id) => {
+        const { tabs } = get();
+        const tab = tabs.find((t) => t.id === id);
+
+        if (!tab || tab.historyIndex <= 0) return null;
+
+        const newIndex = tab.historyIndex - 1;
+        const newEntry = tab.history[newIndex];
+
+        set((state) => ({
+          tabs: state.tabs.map((t) =>
+            t.id === id
+              ? { ...t, path: newEntry.path, title: newEntry.title, historyIndex: newIndex }
+              : t,
+          ),
+        }));
+
+        return { path: newEntry.path, title: newEntry.title };
+      },
+
+      goForward: (id) => {
+        const { tabs } = get();
+        const tab = tabs.find((t) => t.id === id);
+
+        if (!tab || tab.historyIndex >= tab.history.length - 1) return null;
+
+        const newIndex = tab.historyIndex + 1;
+        const newEntry = tab.history[newIndex];
+
+        set((state) => ({
+          tabs: state.tabs.map((t) =>
+            t.id === id
+              ? { ...t, path: newEntry.path, title: newEntry.title, historyIndex: newIndex }
+              : t,
+          ),
+        }));
+
+        return { path: newEntry.path, title: newEntry.title };
+      },
+
+      canGoBack: (id) => {
+        const { tabs } = get();
+        const tab = tabs.find((t) => t.id === id);
+        return tab ? tab.historyIndex > 0 : false;
+      },
+
+      canGoForward: (id) => {
+        const { tabs } = get();
+        const tab = tabs.find((t) => t.id === id);
+        return tab ? tab.historyIndex < tab.history.length - 1 : false;
       },
 
       updateTabScroll: (id, scrollPosition) => {
@@ -160,6 +257,31 @@ export const useTabStore = create<TabStore>()(
         sidebarWidth: state.sidebarWidth,
         sidebarCollapsed: state.sidebarCollapsed,
       }),
+      // Migrate old tabs without history
+      migrate: (persistedState: any) => {
+        if (persistedState?.tabs) {
+          persistedState.tabs = persistedState.tabs.map((tab: any) => {
+            // Handle old format (string array) or missing history
+            let history = tab.history;
+            if (!history) {
+              history = [{ path: tab.path || '', title: tab.title || 'New Tab' }];
+            } else if (typeof history[0] === 'string') {
+              // Migrate from old string array format to new object format
+              history = history.map((path: string) => ({
+                path,
+                title: tab.title || 'New Tab',
+              }));
+            }
+
+            return {
+              ...tab,
+              history,
+              historyIndex: tab.historyIndex ?? 0,
+            };
+          });
+        }
+        return persistedState;
+      },
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
