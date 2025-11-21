@@ -38,6 +38,15 @@ export const useTabStore = create<TabStore>()(
 
       setHasHydrated: (hydrated) => {
         set({ hasHydrated: hydrated });
+
+        // After hydration, ensure at least one tab exists
+        if (hydrated) {
+          const { tabs } = get();
+          if (tabs.length === 0) {
+            // No tabs in storage, will be created by PageLayout based on URL
+            return;
+          }
+        }
       },
 
       addTab: (tab) => {

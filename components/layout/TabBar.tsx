@@ -34,6 +34,7 @@ export function TabBar() {
 
   const handleTabClick = (tabId: string, path: string) => {
     setActiveTab(tabId);
+    // Use router.push to add to browser history
     router.push(`/${path}`);
   };
 
@@ -43,10 +44,9 @@ export function TabBar() {
 
     // If this was the last tab, create a new "New Tab" first, then remove the old one
     if (remainingTabs.length === 0) {
-      // First remove the old tab
       removeTab(tabId);
-      // Then create a new tab with explicit default values
       addTab({ title: 'New Tab', path: '' });
+      // Use replace to avoid adding to history when closing last tab
       router.replace('/');
     } else {
       removeTab(tabId);
@@ -56,7 +56,8 @@ export function TabBar() {
         const index = tabs.findIndex((t) => t.id === tabId);
         const newActiveTab = remainingTabs[Math.min(index, remainingTabs.length - 1)];
         if (newActiveTab) {
-          router.push(`/${newActiveTab.path}`);
+          // Use replace to avoid polluting history when closing tabs
+          router.replace(`/${newActiveTab.path}`);
         }
       }
     }

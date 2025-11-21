@@ -92,7 +92,7 @@ export function PageLayout({ navigation, children }: PageLayoutProps) {
     return null;
   };
 
-  // Ensure a tab exists for the current URL
+  // Sync URL with tab state - URL is the source of truth
   useEffect(() => {
     // Wait for hydration to complete
     if (!hasHydrated) return;
@@ -100,52 +100,36 @@ export function PageLayout({ navigation, children }: PageLayoutProps) {
     // Normalize path by removing leading slash and trailing slash
     const currentPath = pathname === '/' ? '' : pathname.slice(1).replace(/\/$/, '');
     const navItem = findNavigationItemByPath(navigation, currentPath);
-    // Use nav item name if found, otherwise "New Tab"
     const title = navItem?.name || 'New Tab';
-
-    console.log('🔍 PageLayout useEffect:', {
-      currentPath,
-      navItem,
-      title,
-      tabsCount: tabs.length,
-      activeTabId,
-      tabs: tabs.map((t) => ({ id: t.id, title: t.title, path: t.path })),
-    });
 
     // If no tabs exist, create one for the current path
     if (tabs.length === 0) {
-      console.log('✅ Creating new tab:', { title, path: currentPath });
       addTab({ title, path: currentPath });
       return;
     }
 
-    // Check if any tab matches the current path
-    const matchingTab = tabs.find((tab) => tab.path === currentPath);
+    // Check if active tab matches current path
+    const activeTab = tabs.find((tab) => tab.id === activeTabId);
 
-    if (matchingTab) {
-      console.log('📍 Found matching tab:', matchingTab);
-      // Tab exists for this path, update its title if it's "New Tab"
-      if (matchingTab.title === 'New Tab' && navItem) {
-        console.log('🔄 Updating tab title from "New Tab" to:', title);
-        updateTabPath(matchingTab.id, currentPath, title);
+    if (activeTab && activeTab.path === currentPath) {
+      // Active tab already matches, just update title if needed
+      if (activeTab.title === 'New Tab' && navItem) {
+        updateTabPath(activeTab.id, currentPath, title);
       }
-    } else {
-      console.log('❌ No matching tab, updating active or first tab');
-      // No matching tab found, update the active tab
-      if (activeTabId) {
-        console.log('🔄 Updating active tab:', activeTabId);
-        updateTabPath(activeTabId, currentPath, title);
-      } else if (tabs.length > 0) {
-        console.log('🔄 Updating first tab:', tabs[0].id);
-        // No active tab but tabs exist, update the first tab
-        updateTabPath(tabs[0].id, currentPath, title);
-      } else {
-        console.log('✅ Creating fallback tab');
-        // Fallback: create a new tab
-        addTab({ title, path: currentPath });
-      }
+      return;
     }
-  }, [pathname, tabs, activeTabId, addTab, updateTabPath, navigation, hasHydrated]);
+
+    // URL changed - always update the active tab (don't switch to other tabs)
+    if (activeTabId) {
+      updateTabPath(activeTabId, currentPath, title);
+    } else if (tabs.length > 0) {
+      // No active tab, update first tab
+      updateTabPath(tabs[0].id, currentPath, title);
+    } else {
+      // Fallback: create new tab
+      addTab({ title, path: currentPath });
+    }
+  }, [pathname, hasHydrated]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
