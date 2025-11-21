@@ -31,6 +31,7 @@ interface TabStore {
   goForward: (id: string) => { path: string; title: string } | null;
   canGoBack: (id: string) => boolean;
   canGoForward: (id: string) => boolean;
+  updateTabHistoryIndex: (id: string, index: number) => void;
   updateTabScroll: (id: string, scrollPosition: number) => void;
   closeOtherTabs: (id: string) => void;
   closeTabsToRight: (id: string) => void;
@@ -203,6 +204,21 @@ export const useTabStore = create<TabStore>()(
         const { tabs } = get();
         const tab = tabs.find((t) => t.id === id);
         return tab ? tab.historyIndex < tab.history.length - 1 : false;
+      },
+
+      updateTabHistoryIndex: (id, index) => {
+        const { tabs } = get();
+        const tab = tabs.find((t) => t.id === id);
+
+        if (!tab || index < 0 || index >= tab.history.length) return;
+
+        const entry = tab.history[index];
+
+        set((state) => ({
+          tabs: state.tabs.map((t) =>
+            t.id === id ? { ...t, path: entry.path, title: entry.title, historyIndex: index } : t,
+          ),
+        }));
       },
 
       updateTabScroll: (id, scrollPosition) => {
