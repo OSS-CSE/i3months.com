@@ -29,13 +29,13 @@ export function TabBar() {
 
   const handleNewTab = () => {
     addTab({ title: 'New Tab', path: '' });
-    router.push('/');
+    router.replace('/');
   };
 
   const handleTabClick = (tabId: string, path: string) => {
     setActiveTab(tabId);
     // Navigate to the tab's current path
-    router.push(`/${path}`);
+    router.replace(`/${path}`);
   };
 
   const closeTab = (tabId: string) => {

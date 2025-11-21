@@ -68,7 +68,7 @@ function MobileNavigationItem({ item, currentPath, level, onNavigate }: MobileNa
       }
 
       // Navigate and close menu
-      router.push(`/${item.path}`);
+      router.replace(`/${item.path}`);
       onNavigate();
     }
   };

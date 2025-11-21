@@ -26,7 +26,7 @@ export function NavigationButtons({ navigation }: NavigationButtonsProps) {
 
     const result = goBack(activeTabId);
     if (result) {
-      router.push(`/${result.path}`);
+      router.replace(`/${result.path}`);
     }
   };
 
@@ -35,7 +35,7 @@ export function NavigationButtons({ navigation }: NavigationButtonsProps) {
 
     const result = goForward(activeTabId);
     if (result) {
-      router.push(`/${result.path}`);
+      router.replace(`/${result.path}`);
     }
   };
 

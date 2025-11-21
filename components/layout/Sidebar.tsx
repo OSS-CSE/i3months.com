@@ -85,7 +85,7 @@ function NavigationItemComponent({
         const firstTab = tabs[0];
         navigateInHistory(firstTab.id, item.path, item.name);
       }
-      router.push(`/${item.path}`);
+      router.replace(`/${item.path}`);
     }
   };
 
