@@ -30,6 +30,20 @@ interface MobileNavigationItemProps {
   level: number;
   /** Callback function when navigation occurs */
   onNavigate: () => void;
+  /** Background color inherited from parent */
+  backgroundColor?: string;
+}
+
+/**
+ * Calculate luminance of a color to determine if it's light or dark
+ */
+function isLightColor(hexColor: string): boolean {
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.5;
 }
 
 /**
@@ -40,13 +54,37 @@ interface MobileNavigationItemProps {
  *
  * @param props - Component props
  */
-function MobileNavigationItem({ item, currentPath, level, onNavigate }: MobileNavigationItemProps) {
+function MobileNavigationItem({
+  item,
+  currentPath,
+  level,
+  onNavigate,
+  backgroundColor,
+}: MobileNavigationItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const router = useRouter();
   const { activeTabId, tabs, addTab } = useTabStore();
   const hasChildren = item.children && item.children.length > 0;
   const isActive = item.path === currentPath;
   const indentClass = level > 0 ? `pl-${level * 4}` : '';
+
+  // Use item's color if defined, otherwise inherit from parent
+  const bgColor = item.color || backgroundColor;
+
+  // Determine if background is light or dark
+  const isLight = bgColor ? isLightColor(bgColor) : true;
+
+  // Get text colors based on background
+  const textColor = isLight ? 'rgb(55, 65, 81)' : 'rgb(243, 244, 246)';
+
+  // Get background style
+  const getBgStyle = (isTopLevel: boolean) => {
+    if (!bgColor) return undefined;
+    return {
+      backgroundColor: bgColor,
+      ...(isTopLevel && { padding: '8px', borderRadius: '6px' }),
+    };
+  };
 
   const handleToggle = () => {
     if (hasChildren) {
@@ -74,12 +112,20 @@ function MobileNavigationItem({ item, currentPath, level, onNavigate }: MobileNa
   };
 
   return (
-    <div className="mb-1">
-      <div className={`flex items-center ${indentClass}`}>
+    <div className="mb-1" style={level === 0 ? getBgStyle(true) : undefined}>
+      <div
+        className={`flex items-center ${indentClass}`}
+        style={level > 0 ? getBgStyle(false) : undefined}
+      >
         {hasChildren && (
           <button
             onClick={handleToggle}
-            className="mr-2 text-gray-500 dark:text-gray-400 p-2 -ml-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 touch-manipulation"
+            className={`mr-2 p-2 -ml-1 rounded-md transition-colors touch-manipulation ${
+              !bgColor
+                ? 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700'
+                : ''
+            }`}
+            style={bgColor ? { color: textColor } : undefined}
             aria-label={isExpanded ? 'Collapse' : 'Expand'}
             aria-expanded={isExpanded}
           >
@@ -100,17 +146,21 @@ function MobileNavigationItem({ item, currentPath, level, onNavigate }: MobileNa
             className={`flex-1 px-4 py-3 rounded-md text-base transition-colors touch-manipulation ${
               isActive
                 ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700'
+                : !bgColor
+                  ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700'
+                  : ''
             } ${!hasChildren ? 'ml-7' : ''}`}
+            style={bgColor && !isActive ? { color: textColor } : undefined}
           >
             {item.icon && <span className="mr-2">{item.icon}</span>}
             {item.name}
           </Link>
         ) : (
           <div
-            className={`flex-1 px-4 py-3 text-base font-semibold text-gray-900 dark:text-gray-100 ${
-              !hasChildren ? 'ml-7' : ''
-            }`}
+            className={`flex-1 px-4 py-3 text-base font-semibold ${
+              !bgColor ? 'text-gray-900 dark:text-gray-100' : ''
+            } ${!hasChildren ? 'ml-7' : ''}`}
+            style={bgColor ? { color: textColor } : undefined}
           >
             {item.icon && <span className="mr-2">{item.icon}</span>}
             {item.name}
@@ -118,7 +168,7 @@ function MobileNavigationItem({ item, currentPath, level, onNavigate }: MobileNa
         )}
       </div>
       {hasChildren && isExpanded && (
-        <div className="mt-1">
+        <div className="mt-1" style={getBgStyle(false)}>
           {item.children!.map((child, index) => (
             <MobileNavigationItem
               key={`${child.name}-${index}`}
@@ -126,6 +176,7 @@ function MobileNavigationItem({ item, currentPath, level, onNavigate }: MobileNa
               currentPath={currentPath}
               level={level + 1}
               onNavigate={onNavigate}
+              backgroundColor={bgColor}
             />
           ))}
         </div>
