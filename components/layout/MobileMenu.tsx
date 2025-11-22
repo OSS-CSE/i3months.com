@@ -112,7 +112,7 @@ function MobileNavigationItem({
   };
 
   return (
-    <div className="mb-1" style={level === 0 ? getBgStyle(true) : undefined}>
+    <div className="mb-0.5" style={level === 0 ? getBgStyle(true) : undefined}>
       <div
         className={`flex items-center ${indentClass}`}
         style={level > 0 ? getBgStyle(false) : undefined}
@@ -143,7 +143,7 @@ function MobileNavigationItem({
           <Link
             href={`/${item.path}`}
             onClick={handleLinkClick}
-            className={`flex-1 px-4 py-3 rounded-md text-base transition-colors touch-manipulation ${
+            className={`flex-1 px-2 py-1.5 rounded-md text-sm transition-colors touch-manipulation ${
               isActive
                 ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium'
                 : !bgColor
@@ -157,7 +157,7 @@ function MobileNavigationItem({
           </Link>
         ) : (
           <div
-            className={`flex-1 px-4 py-3 text-base font-semibold ${
+            className={`flex-1 px-2 py-1.5 text-sm font-semibold ${
               !bgColor ? 'text-gray-900 dark:text-gray-100' : ''
             } ${!hasChildren ? 'ml-7' : ''}`}
             style={bgColor ? { color: textColor } : undefined}
@@ -168,7 +168,7 @@ function MobileNavigationItem({
         )}
       </div>
       {hasChildren && isExpanded && (
-        <div className="mt-1" style={getBgStyle(false)}>
+        <div className="mt-0.5" style={getBgStyle(false)}>
           {item.children!.map((child, index) => (
             <MobileNavigationItem
               key={`${child.name}-${index}`}
