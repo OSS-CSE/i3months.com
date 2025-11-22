@@ -37,6 +37,10 @@ export const payload: Payload = {
       path: 'test-all-markdown',
     },
     {
+      name: 'Empty Folder',
+      children: [],
+    },
+    {
       name: 'Tutorials',
       color: '#fed7aa',
       children: [
