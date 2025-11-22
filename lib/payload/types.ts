@@ -10,6 +10,8 @@ export interface NavigationItem {
   children?: NavigationItem[];
   /** Optional icon identifier */
   icon?: string;
+  /** Optional background color for the navigation item */
+  color?: string;
 }
 
 /**
