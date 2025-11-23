@@ -4,7 +4,7 @@ description: Software Engineer & Full-Stack Developer
 ---
 
 <div align="center">
-  <img src="/images/docs/profile.jpeg" alt="Profile" width="200" style="border-radius: 50%; margin-bottom: 20px;" />
+  <img src="/images/docs/intro/profile.jpeg" alt="Profile" width="200" style="border-radius: 50%; margin-bottom: 20px;" />
 </div>
 
 <div align="center">
