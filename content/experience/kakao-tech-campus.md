@@ -38,7 +38,7 @@ UniScope was created to fill that gap, helping students make more objective and 
 
 #### Tech Stack
 
-`React` `Next.js` `TypeScript` `Express` `PWA` `Workbox` `react-query` `styled-components` `lighthouse` `storybook` `React Testing Library` `Github Action` `Jira` `Figma`
+`React` `TypeScript` `react-query` `lighthouse` `storybook` `Playwright` `Github Action` `Figma` `Tailwind` `Shadcn` `Java` `SpringBoot` `Python` `AWS`
 
 #### Architecture
 
