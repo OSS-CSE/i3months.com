@@ -117,12 +117,13 @@ function MobileNavigationItem({
         className={`flex items-center ${indentClass}`}
         style={level > 0 ? getBgStyle(false) : undefined}
       >
-        {hasChildren && (
+        {hasChildren ? (
+          // Folder with children - entire area is clickable to toggle
           <button
             onClick={handleToggle}
-            className={`mr-2 p-2 -ml-1 rounded-md transition-colors touch-manipulation ${
+            className={`flex items-center flex-1 px-2 py-1.5 rounded-md text-sm transition-colors touch-manipulation ${
               !bgColor
-                ? 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700'
+                ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700'
                 : ''
             }`}
             style={bgColor ? { color: textColor } : undefined}
@@ -130,7 +131,7 @@ function MobileNavigationItem({
             aria-expanded={isExpanded}
           >
             <svg
-              className={`w-5 h-5 transition-transform duration-[120ms] ${isExpanded ? 'rotate-90' : ''}`}
+              className={`w-5 h-5 mr-2 -ml-1 transition-transform duration-[120ms] ${isExpanded ? 'rotate-90' : ''}`}
               style={{ transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)' }}
               fill="none"
               stroke="currentColor"
@@ -138,29 +139,34 @@ function MobileNavigationItem({
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
+            <span className="font-semibold">
+              {item.icon && <span className="mr-2">{item.icon}</span>}
+              {item.name}
+            </span>
           </button>
-        )}
-        {item.path ? (
+        ) : item.path ? (
+          // Item with path - link
           <Link
             href={`/${item.path}`}
             onClick={handleLinkClick}
-            className={`flex-1 px-2 py-1.5 rounded-md text-sm transition-colors touch-manipulation ${
+            className={`flex-1 px-2 py-1.5 ml-7 rounded-md text-sm transition-colors touch-manipulation ${
               isActive
                 ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium'
                 : !bgColor
                   ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700'
                   : ''
-            } ${!hasChildren ? 'ml-7' : ''}`}
+            }`}
             style={bgColor && !isActive ? { color: textColor } : undefined}
           >
             {item.icon && <span className="mr-2">{item.icon}</span>}
             {item.name}
           </Link>
         ) : (
+          // Item without path or children - static text
           <div
-            className={`flex-1 px-2 py-1.5 text-sm font-semibold ${
+            className={`flex-1 px-2 py-1.5 ml-7 text-sm font-semibold ${
               !bgColor ? 'text-gray-900 dark:text-gray-100' : ''
-            } ${!hasChildren ? 'ml-7' : ''}`}
+            }`}
             style={bgColor ? { color: textColor } : undefined}
           >
             {item.icon && <span className="mr-2">{item.icon}</span>}
