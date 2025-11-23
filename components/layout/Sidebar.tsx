@@ -99,7 +99,7 @@ function NavigationItemComponent({
 
     return {
       backgroundColor: bgColor,
-      ...(isTopLevel && { padding: '8px', borderRadius: '6px' }),
+      ...(isTopLevel && { padding: '4px', borderRadius: '6px' }),
     };
   };
 
@@ -408,7 +408,7 @@ export function Sidebar({ navigation }: SidebarProps) {
 
       {/* Navigation */}
       {!sidebarCollapsed && (
-        <nav className="p-2 space-y-2">
+        <nav className="p-2 space-y-1">
           {filteredNavigation.length > 0 ? (
             filteredNavigation.map((item, index) => (
               <div key={`${item.name}-${index}`} className="rounded-md overflow-hidden">
