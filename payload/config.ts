@@ -6,22 +6,20 @@ import { Payload } from '@/lib/payload/types';
  */
 export const payload: Payload = {
   global: {
-    title: 'Documentation Site',
-    description:
-      'A beautiful documentation site built with Next.js, inspired by Notion and Obsidian',
+    title: 'Joonmo Jeong - Software Engineer',
+    description: 'Software Engineer Joonmo Jeong. Interested in Robust Architecture.',
     favicon: '/favicon.ico',
     baseUrl: 'https://i3months.com',
     seo: {
       openGraph: {
-        title: 'Documentation Site - Modern Static Site Generator',
-        description:
-          'A beautiful documentation site built with Next.js, inspired by Notion and Obsidian',
+        title: 'Joonmo Jeong - Software Engineer',
+        description: 'Software Engineer Joonmo Jeong. Interested in Robust Architecture.',
         images: [
           {
             url: '/og-image.svg',
             width: 1200,
             height: 630,
-            alt: 'Documentation Site',
+            alt: 'Joonmo Jeong - Software Engineer',
           },
         ],
       },
@@ -29,108 +27,13 @@ export const payload: Payload = {
   },
   navigation: [
     {
-      name: 'Introduction',
+      name: 'Home',
       path: 'intro',
-    },
-    {
-      name: '🧪 Markdown Test',
-      path: 'test-all-markdown',
-    },
-    {
-      name: 'Empty Folder',
-      children: [],
-    },
-    {
-      name: 'Tutorials',
-      color: '#fed7aa',
-      children: [
-        {
-          name: 'Beginner',
-          children: [
-            {
-              name: 'First Steps',
-              path: 'tutorials/beginner/first-steps',
-            },
-          ],
-        },
-        {
-          name: 'Intermediate',
-          children: [
-            {
-              name: 'State Management',
-              path: 'tutorials/intermediate/state-management',
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: 'Guides',
-      color: '#fef08a',
-      children: [
-        {
-          name: 'Quick Start',
-          path: 'guides/quick-start',
-        },
-        {
-          name: 'Configuration',
-          path: 'guides/configuration',
-        },
-        {
-          name: 'Advanced',
-          children: [
-            {
-              name: 'Deployment',
-              path: 'guides/advanced/deployment',
-            },
-            {
-              name: 'Performance',
-              path: 'guides/advanced/performance',
-            },
-            {
-              name: 'Security',
-              children: [
-                {
-                  name: 'Authentication',
-                  path: 'guides/advanced/security/authentication',
-                },
-                {
-                  name: 'Authorization',
-                  path: 'guides/advanced/security/authorization',
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: 'API Reference',
-      color: '#bfdbfe',
-      children: [
-        {
-          name: 'Overview',
-          path: 'api/overview',
-        },
-        {
-          name: 'Endpoints',
-          children: [
-            {
-              name: 'Users API',
-              path: 'api/endpoints/users',
-            },
-            {
-              name: 'Posts API',
-              path: 'api/endpoints/posts',
-            },
-          ],
-        },
-      ],
     },
   ],
   theme: {
-    primary: '#2563eb',
-    secondary: '#7c3aed',
+    primary: '#6366f1',
+    secondary: '#8b5cf6',
     background: '#ffffff',
     text: '#1f2937',
     sidebarBg: '#f9fafb',
