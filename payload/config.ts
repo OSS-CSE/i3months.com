@@ -47,6 +47,23 @@ export const payload: Payload = {
         },
       ],
     },
+    {
+      name: 'Awards',
+      children: [
+        {
+          name: 'NTIS Information Utilization',
+          path: 'awards/ntis-information-utilization',
+        },
+        {
+          name: 'K-Digital Challenge',
+          path: 'awards/k-digital-challenge',
+        },
+        {
+          name: 'Environmental Data Competition',
+          path: 'awards/environmental-data-competition',
+        },
+      ],
+    },
   ],
   theme: {
     primary: '#6366f1',
