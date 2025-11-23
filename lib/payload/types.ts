@@ -12,6 +12,8 @@ export interface NavigationItem {
   icon?: string;
   /** Optional background color for the navigation item */
   color?: string;
+  /** Hide this item from navigation (accessible only via direct URL) */
+  hidden?: boolean;
 }
 
 /**

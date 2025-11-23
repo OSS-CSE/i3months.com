@@ -13,7 +13,8 @@
     "type-check": "tsc --noEmit",
     "test": "vitest --run",
     "test:watch": "vitest",
-    "validate:payload": "tsx scripts/validate-payload.ts"
+    "validate:payload": "tsx scripts/validate-payload.ts",
+    "show-urls": "tsx scripts/show-hash-urls.ts"
   },
   "dependencies": {
     "ajv": "^8.12.0",
