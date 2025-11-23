@@ -46,29 +46,32 @@ export function findNavigationItemByPath(
  */
 export function TabInitializer({ navigation }: TabInitializerProps) {
   const pathname = usePathname();
-  const { tabs, addTab, hasHydrated } = useTabStore();
+  const { tabs, addTab, activeTabId, updateTabPath, hasHydrated } = useTabStore();
   const isInitialMount = useRef(true);
 
   useEffect(() => {
     if (!hasHydrated) return;
     if (!isInitialMount.current) return;
 
-    // Only create initial tab if no tabs exist
+    const currentHash = pathname === '/' ? '' : pathname.slice(1).replace(/\/$/, '');
+    const currentPath = currentHash
+      ? resolveHashToPath(currentHash, navigation) || currentHash
+      : '';
+
     if (tabs.length === 0) {
-      const currentHash = pathname === '/' ? '' : pathname.slice(1).replace(/\/$/, '');
-
-      // Resolve hash to actual path
-      const currentPath = currentHash
-        ? resolveHashToPath(currentHash, navigation) || currentHash
-        : '';
-
+      // No saved tabs - create initial tab based on URL
       const navItem = findNavigationItemByPath(navigation, currentPath);
       const title = navItem?.name || 'New Tab';
       addTab({ title, path: currentPath });
+    } else if (activeTabId) {
+      // Tabs exist - update active tab to match URL
+      const navItem = findNavigationItemByPath(navigation, currentPath);
+      const title = navItem?.name || 'New Tab';
+      updateTabPath(activeTabId, currentPath, title);
     }
 
     isInitialMount.current = false;
-  }, [hasHydrated, tabs.length, pathname, navigation, addTab]);
+  }, [hasHydrated, tabs.length, pathname, navigation, addTab, activeTabId, updateTabPath]);
 
   return null;
 }
