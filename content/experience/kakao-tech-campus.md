@@ -4,13 +4,9 @@ description: Frontend Developer Training Program
 favicon: /images/icons/kakaotechcampus.ico
 ---
 
+<img src="/images/icons/kakaotechcampus.ico" alt="Kakao Tech Campus" width="60" style="margin-bottom: 10px;" />
+
 # Kakao Tech Campus
-
----
-
-<div align="center">
-  <img src="/images/docs/experience/kakao-tech-campus/kakao-tech-campus-small.png" alt="Kakao Tech Campus" style="border-radius: 8px; margin: 20px 0;" />
-</div>
 
 Participated in the Kakao Tech Campus 3rd cohort and successfully completed the final presentation and UniScope project.  
 Received the **Top Performance Award** in the Frontend track.
