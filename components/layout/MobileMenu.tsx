@@ -82,7 +82,7 @@ function MobileNavigationItem({
     if (!bgColor) return undefined;
     return {
       backgroundColor: bgColor,
-      ...(isTopLevel && { padding: '8px', borderRadius: '6px' }),
+      ...(isTopLevel && { padding: '4px', borderRadius: '6px' }),
     };
   };
 
@@ -112,7 +112,7 @@ function MobileNavigationItem({
   };
 
   return (
-    <div className="mb-0.5" style={level === 0 ? getBgStyle(true) : undefined}>
+    <div className={level === 0 ? 'mb-0.5' : ''} style={level === 0 ? getBgStyle(true) : undefined}>
       <div
         className={`flex items-center ${indentClass}`}
         style={level > 0 ? getBgStyle(false) : undefined}
@@ -121,7 +121,7 @@ function MobileNavigationItem({
           // Folder with children - entire area is clickable to toggle
           <button
             onClick={handleToggle}
-            className={`flex items-center flex-1 px-2 py-1.5 rounded-md text-sm transition-colors touch-manipulation ${
+            className={`flex items-center flex-1 px-2 py-1 rounded-md text-sm transition-colors touch-manipulation ${
               !bgColor
                 ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700'
                 : ''
@@ -131,7 +131,7 @@ function MobileNavigationItem({
             aria-expanded={isExpanded}
           >
             <svg
-              className={`w-5 h-5 mr-2 -ml-1 transition-transform duration-[120ms] ${isExpanded ? 'rotate-90' : ''}`}
+              className={`w-4 h-4 mr-2 -ml-1 transition-transform duration-[120ms] ${isExpanded ? 'rotate-90' : ''}`}
               style={{ transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)' }}
               fill="none"
               stroke="currentColor"
@@ -149,7 +149,7 @@ function MobileNavigationItem({
           <Link
             href={`/${item.path}`}
             onClick={handleLinkClick}
-            className={`flex-1 px-2 py-1.5 ml-7 rounded-md text-sm transition-colors touch-manipulation ${
+            className={`flex-1 px-2 py-1 ml-6 rounded-md text-sm transition-colors touch-manipulation ${
               isActive
                 ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium'
                 : !bgColor
@@ -164,7 +164,7 @@ function MobileNavigationItem({
         ) : (
           // Item without path or children - static text
           <div
-            className={`flex-1 px-2 py-1.5 ml-7 text-sm font-semibold ${
+            className={`flex-1 px-2 py-1 ml-6 text-sm font-semibold ${
               !bgColor ? 'text-gray-900 dark:text-gray-100' : ''
             }`}
             style={bgColor ? { color: textColor } : undefined}
@@ -176,7 +176,7 @@ function MobileNavigationItem({
       </div>
       {hasChildren && (
         <div
-          className="overflow-hidden transition-all duration-[120ms] mt-0.5"
+          className="overflow-hidden transition-all duration-[120ms]"
           style={{
             maxHeight: isExpanded ? '1000px' : '0',
             transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
