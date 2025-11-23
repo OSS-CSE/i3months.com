@@ -11,6 +11,10 @@ favicon: /images/icons/kakaotechcampus.ico
 Participated in the Kakao Tech Campus 3rd cohort and successfully completed the final presentation and UniScope project.  
 Received the **Top Performance Award** in the Frontend track.
 
+#### Tech Stack
+
+`React` `TypeScript` `react-query` `lighthouse` `storybook` `Playwright` `Github Action` `Figma` `Tailwind` `Shadcn` `Java` `SpringBoot` `Python` `AWS`
+
 ---
 
 <div align="center">
@@ -35,10 +39,6 @@ UniScope was created to fill that gap, helping students make more objective and 
 - **Documented all project UI components** using **Storybook**, increasing code reusability and ensuring design consistency across the application
 - **Established an E2E testing environment** using **Playwright** to automate critical UI flows and major business logic within a real browser context
 - **Optimized page structure and performance** to achieve high scores on all four Lighthouse metrics, enhancing initial accessibility through Meta Tag-based SEO
-
-#### Tech Stack
-
-`React` `TypeScript` `react-query` `lighthouse` `storybook` `Playwright` `Github Action` `Figma` `Tailwind` `Shadcn` `Java` `SpringBoot` `Python` `AWS`
 
 #### Architecture
 
