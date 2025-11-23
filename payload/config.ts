@@ -30,6 +30,23 @@ export const payload: Payload = {
       name: 'About Joonmo Jeong',
       path: 'intro',
     },
+    {
+      name: 'Experience',
+      children: [
+        {
+          name: 'Kakao Tech Campus',
+          path: 'experience/kakao-tech-campus',
+        },
+        {
+          name: 'IWAZ',
+          path: 'experience/iwaz',
+        },
+        {
+          name: 'CHIRON SOFT',
+          path: 'experience/chiron-soft',
+        },
+      ],
+    },
   ],
   theme: {
     primary: '#6366f1',
