@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTabStore } from '@/lib/store/tabStore';
 import { NavigationItem } from '@/lib/payload/types';
+import { resolveHashToPath } from '@/lib/navigation/hash';
 
 interface TabInitializerProps {
   navigation: NavigationItem[];
@@ -50,10 +51,17 @@ export function TabInitializer({ navigation }: TabInitializerProps) {
 
   useEffect(() => {
     if (!hasHydrated) return;
+    if (!isInitialMount.current) return;
 
-    // Only create initial tab if no tabs exist and this is the first mount
-    if (tabs.length === 0 && isInitialMount.current) {
-      const currentPath = pathname === '/' ? '' : pathname.slice(1).replace(/\/$/, '');
+    // Only create initial tab if no tabs exist
+    if (tabs.length === 0) {
+      const currentHash = pathname === '/' ? '' : pathname.slice(1).replace(/\/$/, '');
+
+      // Resolve hash to actual path
+      const currentPath = currentHash
+        ? resolveHashToPath(currentHash, navigation) || currentHash
+        : '';
+
       const navItem = findNavigationItemByPath(navigation, currentPath);
       const title = navItem?.name || 'New Tab';
       addTab({ title, path: currentPath });
