@@ -168,7 +168,8 @@ function NavigationItemComponent({
               aria-expanded={isExpanded}
             >
               <ChevronRight
-                className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                className={`w-4 h-4 transition-transform duration-[120ms] ${isExpanded ? 'rotate-90' : ''}`}
+                style={{ transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)' }}
               />
             </button>
           )}
@@ -201,8 +202,15 @@ function NavigationItemComponent({
           )}
         </div>
       </div>
-      {hasChildren && isExpanded && (
-        <div style={getBgStyle(false)}>
+      {hasChildren && (
+        <div
+          className="overflow-hidden transition-all duration-[120ms]"
+          style={{
+            maxHeight: isExpanded ? '1000px' : '0',
+            transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+            ...getBgStyle(false),
+          }}
+        >
           {item.children!.map((child, index) => {
             const newParentLines = [...parentLines, true];
 

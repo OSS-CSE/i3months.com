@@ -130,7 +130,8 @@ function MobileNavigationItem({
             aria-expanded={isExpanded}
           >
             <svg
-              className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+              className={`w-5 h-5 transition-transform duration-[120ms] ${isExpanded ? 'rotate-90' : ''}`}
+              style={{ transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)' }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -167,8 +168,15 @@ function MobileNavigationItem({
           </div>
         )}
       </div>
-      {hasChildren && isExpanded && (
-        <div className="mt-0.5" style={getBgStyle(false)}>
+      {hasChildren && (
+        <div
+          className="overflow-hidden transition-all duration-[120ms] mt-0.5"
+          style={{
+            maxHeight: isExpanded ? '1000px' : '0',
+            transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+            ...getBgStyle(false),
+          }}
+        >
           {item.children!.map((child, index) => (
             <MobileNavigationItem
               key={`${child.name}-${index}`}
