@@ -87,5 +87,17 @@ JSON configuration example:
 
 - Read the [Quick Start Guide](/guides/quick-start) to set up your project
 - Learn about [Configuration](/guides/configuration) options
+- Explore the [API Reference](/api/overview) for detailed documentation
+- Check out [Advanced Deployment](/guides/advanced/deployment) strategies
 - Customize your theme colors
 - Add your own Markdown content
+
+## Internal Links
+
+All internal links in Markdown are automatically converted to hash-based URLs:
+
+- [Tutorials - First Steps](/tutorials/beginner/first-steps)
+- [State Management Guide](/tutorials/intermediate/state-management)
+- [Security - Authentication](/guides/advanced/security/authentication)
+
+You can write links using normal paths, and they'll work automatically!
