@@ -1,7 +1,7 @@
 {
-  "name": "notion-like-landing-page",
+  "name": "eziwiki",
   "version": "0.1.0",
-  "description": "A Notion/Obsidian-style static landing page generator built with Next.js",
+  "description": "An easy-to-use wiki and documentation site generator built with Next.js",
   "private": true,
   "scripts": {
     "dev": "next dev",
