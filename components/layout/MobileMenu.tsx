@@ -66,7 +66,14 @@ function MobileNavigationItem({
   const { activeTabId, tabs, addTab } = useTabStore();
   const hasChildren = item.children && item.children.length > 0;
   const isActive = item.path === currentPath;
-  const indentClass = level > 0 ? `pl-${level * 4}` : '';
+
+  // Calculate left margin based on level using inline styles
+  const getLeftMarginStyle = () => {
+    if (level === 0) return {};
+    const baseMargin = level * 24; // 24px per level
+    const extraMargin = hasChildren ? 0 : 4; // Extra 4px for documents
+    return { marginLeft: `${baseMargin + extraMargin}px` };
+  };
 
   // Use item's color if defined, otherwise inherit from parent
   const bgColor = item.color || backgroundColor;
@@ -82,7 +89,7 @@ function MobileNavigationItem({
     if (!bgColor) return undefined;
     return {
       backgroundColor: bgColor,
-      ...(isTopLevel && { padding: '8px', borderRadius: '6px' }),
+      ...(isTopLevel && { padding: '4px', borderRadius: '6px' }),
     };
   };
 
@@ -112,25 +119,23 @@ function MobileNavigationItem({
   };
 
   return (
-    <div className="mb-0.5" style={level === 0 ? getBgStyle(true) : undefined}>
-      <div
-        className={`flex items-center ${indentClass}`}
-        style={level > 0 ? getBgStyle(false) : undefined}
-      >
-        {hasChildren && (
+    <div className={level === 0 ? 'mb-0.5' : ''} style={level === 0 ? getBgStyle(true) : undefined}>
+      <div className="flex items-center" style={level > 0 ? getBgStyle(false) : undefined}>
+        {hasChildren ? (
+          // Folder with children - entire area is clickable to toggle
           <button
             onClick={handleToggle}
-            className={`mr-2 p-2 -ml-1 rounded-md transition-colors touch-manipulation ${
+            className={`flex items-center flex-1 px-2 py-1 rounded-md text-sm transition-colors touch-manipulation ${
               !bgColor
-                ? 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700'
+                ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700'
                 : ''
             }`}
-            style={bgColor ? { color: textColor } : undefined}
+            style={bgColor ? { color: textColor, ...getLeftMarginStyle() } : getLeftMarginStyle()}
             aria-label={isExpanded ? 'Collapse' : 'Expand'}
             aria-expanded={isExpanded}
           >
             <svg
-              className={`w-5 h-5 transition-transform duration-[120ms] ${isExpanded ? 'rotate-90' : ''}`}
+              className={`w-4 h-4 mr-2 -ml-1 flex-shrink-0 transition-transform duration-[120ms] ${isExpanded ? 'rotate-90' : ''}`}
               style={{ transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)' }}
               fill="none"
               stroke="currentColor"
@@ -138,30 +143,39 @@ function MobileNavigationItem({
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
+            <span className="font-semibold">
+              {item.icon && <span className="mr-2">{item.icon}</span>}
+              {item.name}
+            </span>
           </button>
-        )}
-        {item.path ? (
+        ) : item.path ? (
+          // Item with path - link
           <Link
             href={`/${item.path}`}
             onClick={handleLinkClick}
-            className={`flex-1 px-2 py-1.5 rounded-md text-sm transition-colors touch-manipulation ${
+            className={`flex-1 px-2 py-1 rounded-md text-sm transition-colors touch-manipulation ${
               isActive
                 ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium'
                 : !bgColor
                   ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700'
                   : ''
-            } ${!hasChildren ? 'ml-7' : ''}`}
-            style={bgColor && !isActive ? { color: textColor } : undefined}
+            }`}
+            style={
+              bgColor && !isActive
+                ? { color: textColor, ...getLeftMarginStyle() }
+                : getLeftMarginStyle()
+            }
           >
             {item.icon && <span className="mr-2">{item.icon}</span>}
             {item.name}
           </Link>
         ) : (
+          // Item without path or children - static text
           <div
-            className={`flex-1 px-2 py-1.5 text-sm font-semibold ${
+            className={`flex-1 px-2 py-1 text-sm font-semibold ${
               !bgColor ? 'text-gray-900 dark:text-gray-100' : ''
-            } ${!hasChildren ? 'ml-7' : ''}`}
-            style={bgColor ? { color: textColor } : undefined}
+            }`}
+            style={bgColor ? { color: textColor, ...getLeftMarginStyle() } : getLeftMarginStyle()}
           >
             {item.icon && <span className="mr-2">{item.icon}</span>}
             {item.name}
@@ -170,7 +184,7 @@ function MobileNavigationItem({
       </div>
       {hasChildren && (
         <div
-          className="overflow-hidden transition-all duration-[120ms] mt-0.5"
+          className="overflow-hidden transition-all duration-[120ms]"
           style={{
             maxHeight: isExpanded ? '1000px' : '0',
             transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
