@@ -27,7 +27,7 @@ export const payload: Payload = {
   },
   navigation: [
     {
-      name: 'Home',
+      name: 'About Joonmo Jeong',
       path: 'intro',
     },
   ],
