@@ -33,33 +33,19 @@ UniScope was created to fill that gap, helping students make more objective and 
 
 #### Project Details
 
-- **Developed UniScope**, an integrated platform providing comprehensive national university information using **TypeScript** and **React**
+- **Served as Frontend Tech Leader**, coordinating team development workflow and establishing technical standards
+- **Implemented FSD (Feature-Sliced Design) architecture**, ensuring clean code structure and maintainable project organization
+- **Built CI/CD pipeline** using **GitHub Actions** for automated testing, building, and deployment processes
 - **Documented all project UI components** using **Storybook**, increasing code reusability and ensuring design consistency across the application
 - **Established an E2E testing environment** using **Playwright** to automate critical UI flows and major business logic within a real browser context
 - **Optimized page structure and performance** to achieve high scores on all four Lighthouse metrics, enhancing initial accessibility through Meta Tag-based SEO
 
----
+#### Tech Stack
 
-### Architecture
+`React` `Next.js` `TypeScript` `Express` `PWA` `Workbox` `react-query` `styled-components` `lighthouse` `storybook` `React Testing Library` `Github Action` `Jira` `Figma`
+
+#### Architecture
 
 <div align="center">
   <img src="/images/docs/experience/kakao-tech-campus/uniscope-architecture.png" alt="UniScope Architecture" style="max-width: 100%; border-radius: 8px; margin: 20px 0;" />
 </div>
-
----
-
-## Tech Stack
-
-**Frontend:** TypeScript, React, Storybook  
-**Testing:** Playwright (E2E Testing)  
-**Optimization:** Lighthouse, SEO  
-**Collaboration:** Agile Development, Team Project
-
----
-
-## Key Achievements
-
-- **Top Performance Award** in Frontend Track
-- Successfully delivered a comprehensive university information platform
-- Established robust testing and documentation practices
-- Achieved excellent performance metrics across all Lighthouse categories
