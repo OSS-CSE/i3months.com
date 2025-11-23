@@ -8,7 +8,7 @@ export const payload: Payload = {
   global: {
     title: 'Joonmo Jeong - Software Engineer',
     description: 'Software Engineer Joonmo Jeong. Interested in Robust Architecture.',
-    favicon: '/favicon.svg',
+    favicon: '/images/icons/favicon.svg',
     baseUrl: 'https://i3months.com',
     seo: {
       openGraph: {
@@ -16,7 +16,7 @@ export const payload: Payload = {
         description: 'Software Engineer Joonmo Jeong. Interested in Robust Architecture.',
         images: [
           {
-            url: '/og-image.svg',
+            url: '/images/og/og-image.svg',
             width: 1200,
             height: 630,
             alt: 'Joonmo Jeong - Software Engineer',
