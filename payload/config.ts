@@ -8,7 +8,7 @@ export const payload: Payload = {
   global: {
     title: 'Joonmo Jeong - Software Engineer',
     description: 'Software Engineer Joonmo Jeong. Interested in Robust Architecture.',
-    favicon: '/favicon.ico',
+    favicon: '/favicon.svg',
     baseUrl: 'https://i3months.com',
     seo: {
       openGraph: {

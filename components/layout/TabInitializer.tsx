@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTabStore } from '@/lib/store/tabStore';
 import { NavigationItem } from '@/lib/payload/types';
+import { resolveHashToPath } from '@/lib/navigation/hash';
 
 interface TabInitializerProps {
   navigation: NavigationItem[];
@@ -45,22 +46,32 @@ export function findNavigationItemByPath(
  */
 export function TabInitializer({ navigation }: TabInitializerProps) {
   const pathname = usePathname();
-  const { tabs, addTab, hasHydrated } = useTabStore();
+  const { tabs, addTab, activeTabId, updateTabPath, hasHydrated } = useTabStore();
   const isInitialMount = useRef(true);
 
   useEffect(() => {
     if (!hasHydrated) return;
+    if (!isInitialMount.current) return;
 
-    // Only create initial tab if no tabs exist and this is the first mount
-    if (tabs.length === 0 && isInitialMount.current) {
-      const currentPath = pathname === '/' ? '' : pathname.slice(1).replace(/\/$/, '');
+    const currentHash = pathname === '/' ? '' : pathname.slice(1).replace(/\/$/, '');
+    const currentPath = currentHash
+      ? resolveHashToPath(currentHash, navigation) || currentHash
+      : '';
+
+    if (tabs.length === 0) {
+      // No saved tabs - create initial tab based on URL
       const navItem = findNavigationItemByPath(navigation, currentPath);
       const title = navItem?.name || 'New Tab';
       addTab({ title, path: currentPath });
+    } else if (activeTabId) {
+      // Tabs exist - update active tab to match URL
+      const navItem = findNavigationItemByPath(navigation, currentPath);
+      const title = navItem?.name || 'New Tab';
+      updateTabPath(activeTabId, currentPath, title);
     }
 
     isInitialMount.current = false;
-  }, [hasHydrated, tabs.length, pathname, navigation, addTab]);
+  }, [hasHydrated, tabs.length, pathname, navigation, addTab, activeTabId, updateTabPath]);
 
   return null;
 }
