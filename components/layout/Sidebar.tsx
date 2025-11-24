@@ -99,7 +99,7 @@ function NavigationItemComponent({
 
     return {
       backgroundColor: bgColor,
-      ...(isTopLevel && { padding: '4px', borderRadius: '6px' }),
+      ...(isTopLevel && { padding: '4px', paddingBottom: '8px', borderRadius: '6px' }),
     };
   };
 
