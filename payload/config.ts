@@ -132,6 +132,16 @@ export const payload: Payload = {
         },
       ],
     },
+    {
+      name: 'Examples',
+      // color: '#d8b4fe',
+      children: [
+        {
+          name: 'Simple Example',
+          path: 'examples/simple-example',
+        },
+      ],
+    },
   ],
   theme: {
     primary: '#2563eb',
