@@ -1,6 +1,8 @@
-![EziWiki](eziwiki.png)
+<div align="center">
+  <img src="eziwiki.png" alt="EziWiki" style="background-color: white; padding: 20px; border-radius: 10px;">
+</div>
 
-A modern, lightweight wiki and documentation generator
+<p align="center">A modern, lightweight wiki and documentation generator</p>
 
 ## Introduction
 
