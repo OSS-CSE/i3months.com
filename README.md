@@ -3,7 +3,7 @@
   <br/><hr/>
 </div>
 
-<p align="center">A modern, lightweight wiki and documentation generator</p>
+<p align="center"><em><strong>A modern, lightweight wiki and documentation generator</strong></em></p>
 
 ## Introduction
 
