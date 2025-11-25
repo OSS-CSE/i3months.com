@@ -1,5 +1,6 @@
 <div align="center">
-  <img src="eziwiki.png" alt="EziWiki" style="background-color: white; padding: 20px; border-radius: 10px;">
+  <img src="eziwiki.png" alt="EziWiki">
+  <br/><hr/>
 </div>
 
 <p align="center">A modern, lightweight wiki and documentation generator</p>
