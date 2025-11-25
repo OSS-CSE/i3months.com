@@ -11,6 +11,8 @@ favicon: /images/icons/kakaotechcampus.ico
 Participated in the Kakao Tech Campus 3rd cohort and successfully completed the final presentation and UniScope project.  
 Received the **Top Performance Award** in the Frontend track.
 
+🔗 [GitHub Repository](https://github.com/kakao-tech-campus-3rd-step3/Team21_FE)
+
 #### Tech Stack
 
 `React` `TypeScript` `react-query` `lighthouse` `storybook` `Playwright` `Github Action` `Figma` `Tailwind` `Shadcn` `Java` `SpringBoot` `Python` `AWS`
