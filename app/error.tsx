@@ -9,11 +9,9 @@ interface ErrorProps {
 
 /**
  * Error boundary component for runtime error handling
- * Displays user-friendly error messages with reset functionality
  */
 export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
-    // Log error to console for debugging
     console.error('Application error:', error);
   }, [error]);
 

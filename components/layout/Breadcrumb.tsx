@@ -19,12 +19,10 @@ function buildBreadcrumbTrail(
   trail: Array<{ name: string; path?: string }> = [],
 ): Array<{ name: string; path?: string }> | null {
   for (const item of items) {
-    // Found the target
     if (item.path === targetPath) {
       return [...trail, { name: item.name, path: item.path }];
     }
 
-    // Search in children - include parent in trail only if it has children
     if (item.children) {
       const found = buildBreadcrumbTrail(item.children, targetPath, [
         ...trail,
@@ -56,10 +54,8 @@ export function Breadcrumb({ navigation }: BreadcrumbProps) {
     return null;
   }
 
-  // Build breadcrumb trail from navigation structure
   const trail = buildBreadcrumbTrail(navigation, currentPath);
 
-  // If no trail found, don't show breadcrumb
   if (!trail || trail.length === 0) {
     return null;
   }

@@ -41,24 +41,18 @@ interface NavigationItemComponentProps {
  * Returns true if the color is light (needs dark text)
  */
 function isLightColor(hexColor: string): boolean {
-  // Remove # if present
   const hex = hexColor.replace('#', '');
 
-  // Convert to RGB
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
 
-  // Calculate relative luminance
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 
-  // Return true if light (luminance > 0.5)
   return luminance > 0.5;
 }
 
 /**
- * Recursive navigation item component with expand/collapse functionality
- *
  * Renders a single navigation item with support for nested children.
  * Items with children can be expanded/collapsed. Items with paths are
  * rendered as links and highlighted when active.
@@ -83,17 +77,13 @@ function NavigationItemComponent({
   const { activeTabId, tabs } = useTabStore();
   const hasChildren = item.children && item.children.length > 0;
 
-  // Use item's color if defined, otherwise inherit from parent
   const bgColor = item.color || backgroundColor;
 
-  // Determine if background is light or dark
   const isLight = bgColor ? isLightColor(bgColor) : true;
 
-  // Get text colors based on background
   const textColor = isLight ? 'rgb(55, 65, 81)' : 'rgb(243, 244, 246)'; // gray-700 : gray-100
   const lineColor = isLight ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.3)';
 
-  // Adjust opacity for dark mode
   const getBgStyle = (isTopLevel: boolean) => {
     if (!bgColor) return undefined;
 
@@ -103,11 +93,9 @@ function NavigationItemComponent({
     };
   };
 
-  // Get the active tab's path
   const activeTab = tabs.find((tab) => tab.id === activeTabId);
   const activeTabPath = activeTab?.path || '';
 
-  // Check if this item matches the active tab's path
   const isActive = item.path === activeTabPath;
 
   const handleToggle = (e: React.MouseEvent) => {
@@ -123,7 +111,6 @@ function NavigationItemComponent({
       const { tabs, addTab: storeAddTab, navigateInHistory } = useTabStore.getState();
 
       if (activeTabId) {
-        // Add to history and update the active tab's path and title
         navigateInHistory(activeTabId, item.path, item.name);
       } else if (tabs.length === 0) {
         // No tabs at all, create a new one
@@ -143,7 +130,6 @@ function NavigationItemComponent({
   return (
     <div className="relative" style={level === 0 ? getBgStyle(true) : undefined}>
       <div className="flex items-center relative" style={level > 0 ? getBgStyle(false) : undefined}>
-        {/* Vertical lines for tree structure */}
         {level > 0 && (
           <div className="absolute left-0 top-0 bottom-0 flex">
             {parentLines.map((showLine, idx) => (
@@ -253,27 +239,12 @@ function NavigationItemComponent({
  * @param props - Component props
  * @param props.navigation - Array of top-level navigation items to display
  *
- * @example
- * ```tsx
- * const navigation = [
- *   { name: 'Home', path: 'home' },
- *   {
- *     name: 'Guides',
- *     children: [
- *       { name: 'Quick Start', path: 'guides/quick-start' }
- *     ]
- *   }
- * ];
- *
- * <Sidebar navigation={navigation} />
- * ```
  */
 export function Sidebar({ navigation }: SidebarProps) {
   const pathname = usePathname();
   const currentPath = pathname === '/' ? '' : pathname.slice(1);
   const { sidebarWidth, sidebarCollapsed, setSidebarWidth, setSidebarCollapsed } = useTabStore();
 
-  // Filter out hidden items
   const visibleNavigation = filterHiddenItems(navigation);
 
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -290,17 +261,14 @@ export function Sidebar({ navigation }: SidebarProps) {
 
       const newWidth = e.clientX;
 
-      // Collapse sidebar when width goes below threshold
       if (newWidth < COLLAPSE_THRESHOLD) {
         setSidebarCollapsed(true);
         setIsResizing(false);
-        // Reset cursor and userSelect immediately
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
         return;
       }
 
-      // Enforce min/max width constraints
       if (newWidth >= MIN_WIDTH && newWidth <= MAX_WIDTH) {
         setSidebarWidth(newWidth);
         setSidebarCollapsed(false);
@@ -323,7 +291,6 @@ export function Sidebar({ navigation }: SidebarProps) {
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
-      // Reset on cleanup as well
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
@@ -338,7 +305,6 @@ export function Sidebar({ navigation }: SidebarProps) {
     setIsResizing(true);
   };
 
-  // Filter navigation items based on search query
   const filterNavigation = (items: NavigationItem[], query: string): NavigationItem[] => {
     if (!query.trim()) return items;
 
@@ -370,7 +336,6 @@ export function Sidebar({ navigation }: SidebarProps) {
         transition: isResizing ? 'none' : 'width 0.3s ease',
       }}
     >
-      {/* Search and Toggle */}
       <div className="flex items-center gap-2 px-2 py-1 border-b border-gray-200 dark:border-gray-800">
         {!sidebarCollapsed ? (
           <>
@@ -406,7 +371,6 @@ export function Sidebar({ navigation }: SidebarProps) {
         )}
       </div>
 
-      {/* Navigation */}
       {!sidebarCollapsed && (
         <nav className="p-2 space-y-1">
           {filteredNavigation.length > 0 ? (
@@ -429,7 +393,6 @@ export function Sidebar({ navigation }: SidebarProps) {
         </nav>
       )}
 
-      {/* Resize handle */}
       {!sidebarCollapsed && (
         <div
           className="absolute top-0 right-0 w-1 h-full bg-transparent hover:bg-blue-500 transition-colors cursor-col-resize z-50"

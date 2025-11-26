@@ -132,21 +132,17 @@ body {
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
-  /* Improve touch scrolling on mobile */
   -webkit-overflow-scrolling: touch;
 }
 
-/* Improve tap highlight color on mobile */
 * {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.05);
 }
 
-/* Ensure smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Improve touch target sizes for better mobile UX */
 @media (max-width: 768px) {
   button,
   a {

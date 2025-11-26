@@ -2,7 +2,6 @@
  * Home page - shows empty state for New Tab
  */
 export default function Home() {
-  // Show empty state for home/new tab
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
       <div className="max-w-md">
