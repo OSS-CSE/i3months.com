@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import '@/styles/theme.css';
-import 'katex/dist/katex.min.css';
 import { PageLayout } from '@/components/layout/PageLayout';
 import { TabInitializer } from '@/components/layout/TabInitializer';
 import { payload } from '@/payload/config';
@@ -48,6 +47,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        <link
+          rel="preload"
+          href="/fonts/Pretandard/Pretendard-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/Pretandard/Pretendard-SemiBold.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

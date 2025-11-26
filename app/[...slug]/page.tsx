@@ -110,6 +110,7 @@ async function MarkdownContent({ path, hash }: { path: string; hash: string }) {
     const { content, frontmatter } = await parseMarkdownFile(path);
     const baseUrl = payload.global.baseUrl || 'https://example.com';
     const canonicalUrl = `${baseUrl}/${hash}`;
+    const hasMath = content.includes('$') || content.includes('\\[') || content.includes('\\(');
 
     return (
       <>
@@ -131,6 +132,12 @@ async function MarkdownContent({ path, hash }: { path: string; hash: string }) {
             }),
           }}
         />
+        {hasMath && (
+          <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+          />
+        )}
         <MarkdownRenderer content={content} />
       </>
     );
