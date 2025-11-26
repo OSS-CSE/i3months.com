@@ -199,9 +199,28 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
           const code = extractText(codeElement?.props?.children || '').replace(/\n$/, '');
           return <CodeBlock language="text" code={code} />;
         },
-        img: ({ src, alt }) => (
-          <img src={src} alt={alt || ''} className="max-w-full h-auto rounded-lg my-4" />
-        ),
+        img: ({ src, alt }) => {
+          // Use regular img for external images (Next.js Image doesn't work well with static export for external URLs)
+          if (src?.startsWith('http')) {
+            return (
+              <img
+                src={src}
+                alt={alt || ''}
+                className="max-w-full h-auto rounded-lg my-4"
+                loading="lazy"
+              />
+            );
+          }
+          // For local images, use regular img with loading="lazy" for better static export compatibility
+          return (
+            <img
+              src={src}
+              alt={alt || ''}
+              className="max-w-full h-auto rounded-lg my-4"
+              loading="lazy"
+            />
+          );
+        },
         hr: () => <hr className="my-8 border-gray-300 dark:border-gray-700" />,
         table: ({ children }) => (
           <div className="overflow-x-auto my-4">
