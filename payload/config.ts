@@ -1,7 +1,7 @@
 import { Payload } from '@/lib/payload/types';
 
 /**
- * Main payload configuration for the landing page
+ * Main payload configuration for eziwiki
  * This defines the site structure, navigation, and theme
  */
 export const payload: Payload = {
@@ -63,6 +63,91 @@ export const payload: Payload = {
           path: 'awards/environmental-data-competition',
         },
       ],
+    },
+    {
+      name: '✍️ Writing Content',
+      color: '#e9d5ff',
+      children: [
+        {
+          name: 'Markdown Basics',
+          path: 'content/markdown-basics',
+        },
+        {
+          name: 'Frontmatter',
+          path: 'content/frontmatter',
+        },
+        {
+          name: 'Code Blocks',
+          path: 'content/code-blocks',
+        },
+      ],
+    },
+    {
+      name: '🔧 Features',
+      color: '#fcd34d',
+      children: [
+        {
+          name: 'Hash-based Navigation',
+          path: 'features/hash-navigation',
+        },
+        {
+          name: 'Hidden Pages',
+          path: 'features/hidden-pages',
+        },
+        {
+          name: 'Dark Mode',
+          path: 'features/dark-mode',
+        },
+        {
+          name: 'Syntax Highlighting',
+          path: 'features/syntax-highlighting',
+        },
+        {
+          name: 'Validation & Testing',
+          path: 'features/validation-testing',
+        },
+      ],
+    },
+    {
+      name: '🚀 Deployment',
+      color: '#fecaca',
+      children: [
+        {
+          name: 'Static Export',
+          path: 'deployment/static-export',
+        },
+        {
+          name: 'GitHub Pages',
+          path: 'deployment/github-pages',
+        },
+        {
+          name: 'Vercel',
+          path: 'deployment/vercel',
+        },
+      ],
+    },
+    {
+      name: '🎨 Examples',
+      color: '#d1fae5',
+      children: [
+        {
+          name: 'Personal Wiki',
+          path: 'examples/personal-wiki',
+        },
+        {
+          name: 'API Documentation',
+          path: 'examples/api-docs',
+        },
+        {
+          name: 'Knowledge Base',
+          path: 'examples/knowledge-base',
+        },
+      ],
+    },
+    {
+      name: 'Secret Demo Page',
+      path: 'secret-demo',
+      hidden: true,
     },
   ],
   theme: {

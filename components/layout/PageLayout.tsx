@@ -20,28 +20,12 @@ interface PageLayoutProps {
 
 /**
  * Main page layout wrapper with responsive navigation
- *
- * Provides the overall page structure with:
- * - Fixed desktop sidebar (visible on screens >= 768px)
- * - Mobile header with hamburger menu (visible on screens < 768px)
- * - Slide-out mobile menu drawer
- * - Centered content area with responsive padding
- *
  * Manages the mobile menu open/close state internally.
  *
  * @param props - Component props
  * @param props.navigation - Array of navigation items to display in sidebar/menu
  * @param props.children - Page content to render in the main content area
  *
- * @example
- * ```tsx
- * import payload from './payload/config';
- *
- * <PageLayout navigation={payload.navigation}>
- *   <h1>Welcome</h1>
- *   <p>This is the page content.</p>
- * </PageLayout>
- * ```
  */
 export function PageLayout({ navigation, children }: PageLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -56,7 +40,6 @@ export function PageLayout({ navigation, children }: PageLayoutProps) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
-      {/* Mobile header with hamburger button */}
       <header className="md:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3">
         <div className="flex items-center justify-between">
           <button
@@ -78,23 +61,17 @@ export function PageLayout({ navigation, children }: PageLayoutProps) {
         </div>
       </header>
 
-      {/* Mobile menu */}
       <MobileMenu navigation={navigation} isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
 
-      {/* Main layout grid */}
       <div className="flex">
-        {/* Desktop sidebar */}
         <Sidebar navigation={navigation} />
 
-        {/* Main content area */}
         <main className="flex-1 min-w-0 flex flex-col">
-          {/* Tab bar and navigation - fixed at top */}
           <div className="sticky top-0 z-20 bg-white dark:bg-gray-950">
             <TabBar />
             <NavigationButtons navigation={navigation} />
           </div>
 
-          {/* Content - scrollable */}
           <div className="flex-1 overflow-y-auto">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
               {children}

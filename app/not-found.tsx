@@ -2,7 +2,6 @@ import Link from 'next/link';
 
 /**
  * 404 Not Found page
- * Displayed when a page or content file doesn't exist
  */
 export default function NotFound() {
   return (

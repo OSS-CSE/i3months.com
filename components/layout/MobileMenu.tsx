@@ -51,8 +51,6 @@ function isLightColor(hexColor: string): boolean {
 }
 
 /**
- * Recursive mobile navigation item component
- *
  * Renders a single navigation item optimized for mobile with touch-friendly
  * targets and automatic menu closing on navigation.
  *
@@ -128,7 +126,6 @@ function MobileNavigationItem({
     <div className={level === 0 ? 'mb-0.5' : ''} style={level === 0 ? getBgStyle(true) : undefined}>
       <div className="flex items-center" style={level > 0 ? getBgStyle(false) : undefined}>
         {hasChildren ? (
-          // Folder with children - entire area is clickable to toggle
           <button
             onClick={handleToggle}
             className={`flex items-center flex-1 px-2 py-1 rounded-md text-sm transition-colors touch-manipulation ${
@@ -155,7 +152,6 @@ function MobileNavigationItem({
             </span>
           </button>
         ) : item.path ? (
-          // Item with path - link
           <Link
             href={`/${resolvePathToHash(item.path, navigation)}`}
             onClick={handleLinkClick}
@@ -176,7 +172,6 @@ function MobileNavigationItem({
             {item.name}
           </Link>
         ) : (
-          // Item without path or children - static text
           <div
             className={`flex-1 px-2 py-1 text-sm font-semibold ${
               !bgColor ? 'text-gray-900 dark:text-gray-100' : ''
@@ -215,8 +210,6 @@ function MobileNavigationItem({
 }
 
 /**
- * Mobile navigation menu with slide-out drawer
- *
  * Displays a full-screen overlay menu for mobile devices. The menu slides
  * in from the left and includes a backdrop overlay. Automatically prevents
  * body scrolling when open and closes when a navigation link is clicked.
@@ -229,16 +222,6 @@ function MobileNavigationItem({
  * @param props.isOpen - Whether the menu is currently open
  * @param props.onClose - Callback function to close the menu
  *
- * @example
- * ```tsx
- * const [isMenuOpen, setIsMenuOpen] = useState(false);
- *
- * <MobileMenu
- *   navigation={navigationItems}
- *   isOpen={isMenuOpen}
- *   onClose={() => setIsMenuOpen(false)}
- * />
- * ```
  */
 export function MobileMenu({ navigation, isOpen, onClose }: MobileMenuProps) {
   const pathname = usePathname();
@@ -261,7 +244,6 @@ export function MobileMenu({ navigation, isOpen, onClose }: MobileMenuProps) {
 
   return (
     <>
-      {/* Overlay backdrop */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden touch-manipulation"
@@ -273,7 +255,6 @@ export function MobileMenu({ navigation, isOpen, onClose }: MobileMenuProps) {
         />
       )}
 
-      {/* Slide-out drawer */}
       <div
         className={`fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-900 z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
           isOpen ? 'translate-x-0' : '-translate-x-full'

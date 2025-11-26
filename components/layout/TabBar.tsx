@@ -36,7 +36,7 @@ export function TabBar() {
 
   const handleTabClick = (tabId: string, path: string) => {
     setActiveTab(tabId);
-    // Navigate to the tab's current path (convert to hash)
+
     const hash = path ? resolvePathToHash(path, payload.navigation) : '';
     router.replace(`/${hash}`);
   };
@@ -45,21 +45,19 @@ export function TabBar() {
     const wasClosingActiveTab = tabId === activeTabId;
     const remainingTabs = tabs.filter((t) => t.id !== tabId);
 
-    // If this was the last tab, create a new "New Tab" first, then remove the old one
     if (remainingTabs.length === 0) {
       removeTab(tabId);
       addTab({ title: 'New Tab', path: '' });
-      // Use replace to avoid adding to history when closing last tab
+
       router.replace('/');
     } else {
       removeTab(tabId);
 
       if (wasClosingActiveTab && remainingTabs.length > 0) {
-        // If we closed the active tab, navigate to the new active tab
         const index = tabs.findIndex((t) => t.id === tabId);
         const newActiveTab = remainingTabs[Math.min(index, remainingTabs.length - 1)];
+
         if (newActiveTab) {
-          // Use replace to avoid polluting history when closing tabs
           const hash = newActiveTab.path
             ? resolvePathToHash(newActiveTab.path, payload.navigation)
             : '';
@@ -135,12 +133,10 @@ export function TabBar() {
 
     let targetIndex = dropIndex;
 
-    // Adjust target index based on drop position
     if (dropPosition === 'after') {
       targetIndex = dropIndex + 1;
     }
 
-    // Adjust for the removed item
     if (draggedIndex < targetIndex) {
       targetIndex -= 1;
     }
@@ -159,7 +155,6 @@ export function TabBar() {
     setDragPosition(null);
   };
 
-  // Detect clicks outside context menu
   React.useEffect(() => {
     if (contextMenu) {
       document.addEventListener('click', handleCloseContextMenu);
@@ -185,7 +180,6 @@ export function TabBar() {
 
         return (
           <div key={tab.id} className="relative flex items-center">
-            {/* Drop indicator - before */}
             {showDropIndicator && dropPosition === 'before' && (
               <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-0.5 bg-blue-500 rounded-full z-10 shadow-lg shadow-blue-500/50" />
             )}
@@ -237,7 +231,6 @@ export function TabBar() {
               </button>
             </div>
 
-            {/* Drop indicator - after */}
             {showDropIndicator && dropPosition === 'after' && (
               <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-0.5 bg-blue-500 rounded-full z-10 shadow-lg shadow-blue-500/50" />
             )}
@@ -245,7 +238,6 @@ export function TabBar() {
         );
       })}
 
-      {/* Floating dragged tab */}
       {draggedIndex !== null && dragPosition && (
         <div
           className="fixed pointer-events-none z-50"
@@ -274,7 +266,6 @@ export function TabBar() {
         </div>
       )}
 
-      {/* New Tab Button */}
       <button
         onClick={handleNewTab}
         className="flex-shrink-0 p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition-colors"
@@ -286,7 +277,6 @@ export function TabBar() {
         </svg>
       </button>
 
-      {/* Context Menu */}
       {contextMenu && (
         <div
           className="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg py-1 min-w-[160px]"
