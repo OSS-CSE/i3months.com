@@ -10,3 +10,5 @@ prize: 'Excellence Prize'
 <img src="/images/docs/awards/trippy.png" alt="K-Digital Challenge" style="margin-bottom: 10px;" />
 
 Developed "Trippy" a personalized travel app using Flutter.
+
+<img src="/images/docs/awards/Trippy_main.png" alt="Trippy App" style="margin-top: 20px;" />
