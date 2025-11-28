@@ -30,7 +30,7 @@ _Have a wonderful day!_
         </svg>
       </div>
     </a>
-    <p style="margin: 0; color: #666; font-size: 14px;">RESUME</p>
+    <p style="margin: 0; color: #666; font-size: 14px;">PORTFOLIO</p>
   </div>
   <div style="text-align: center;">
     <a href="https://github.com/i3months" target="_blank" rel="noopener noreferrer">
