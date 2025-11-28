@@ -36,14 +36,17 @@ export const payload: Payload = {
         {
           name: 'Kakao Tech Campus',
           path: 'experience/kakao-tech-campus',
+          hidden: true,
         },
         {
           name: 'IWAZ',
           path: 'experience/iwaz',
+          hidden: true,
         },
         {
           name: 'CHIRON SOFT',
           path: 'experience/chiron-soft',
+          hidden: true,
         },
       ],
     },
@@ -53,14 +56,17 @@ export const payload: Payload = {
         {
           name: 'NTIS Information Utilization',
           path: 'awards/ntis-information-utilization',
+          hidden: true,
         },
         {
           name: 'K-Digital Challenge',
           path: 'awards/k-digital-challenge',
+          hidden: true,
         },
         {
           name: 'Environmental Data Competition',
           path: 'awards/environmental-data-competition',
+          hidden: true,
         },
       ],
     },
