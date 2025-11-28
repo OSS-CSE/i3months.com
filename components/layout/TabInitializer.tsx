@@ -42,36 +42,59 @@ export function findNavigationItemByPath(
 }
 
 /**
- * Initializes tabs on first load only
+ * Initializes tabs on first load and handles URL changes
  */
 export function TabInitializer({ navigation }: TabInitializerProps) {
   const pathname = usePathname();
-  const { tabs, addTab, activeTabId, updateTabPath, hasHydrated } = useTabStore();
+  const { tabs, addTab, activeTabId, updateTabPath, navigateInHistory, hasHydrated } =
+    useTabStore();
   const isInitialMount = useRef(true);
+  const previousPathname = useRef(pathname);
 
   useEffect(() => {
     if (!hasHydrated) return;
-    if (!isInitialMount.current) return;
 
     const currentHash = pathname === '/' ? '' : pathname.slice(1).replace(/\/$/, '');
     const currentPath = currentHash
       ? resolveHashToPath(currentHash, navigation) || currentHash
       : '';
 
-    if (tabs.length === 0) {
-      // No saved tabs - create initial tab based on URL
-      const navItem = findNavigationItemByPath(navigation, currentPath);
-      const title = navItem?.name || 'New Tab';
-      addTab({ title, path: currentPath });
-    } else if (activeTabId) {
-      // Tabs exist - update active tab to match URL
-      const navItem = findNavigationItemByPath(navigation, currentPath);
-      const title = navItem?.name || 'New Tab';
-      updateTabPath(activeTabId, currentPath, title);
+    // Initial mount - set up first tab
+    if (isInitialMount.current) {
+      if (tabs.length === 0) {
+        // No saved tabs - create initial tab based on URL
+        const navItem = findNavigationItemByPath(navigation, currentPath);
+        const title = navItem?.name || 'New Tab';
+        addTab({ title, path: currentPath });
+      } else if (activeTabId) {
+        // Tabs exist - update active tab to match URL
+        const navItem = findNavigationItemByPath(navigation, currentPath);
+        const title = navItem?.name || 'New Tab';
+        updateTabPath(activeTabId, currentPath, title);
+      }
+
+      isInitialMount.current = false;
+      previousPathname.current = pathname;
+      return;
     }
 
-    isInitialMount.current = false;
-  }, [hasHydrated, tabs.length, pathname, navigation, addTab, activeTabId, updateTabPath]);
+    // URL changed - add to history
+    if (pathname !== previousPathname.current && activeTabId) {
+      const navItem = findNavigationItemByPath(navigation, currentPath);
+      const title = navItem?.name || 'New Tab';
+      navigateInHistory(activeTabId, currentPath, title);
+      previousPathname.current = pathname;
+    }
+  }, [
+    hasHydrated,
+    tabs.length,
+    pathname,
+    navigation,
+    addTab,
+    activeTabId,
+    updateTabPath,
+    navigateInHistory,
+  ]);
 
   return null;
 }
