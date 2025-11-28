@@ -32,6 +32,7 @@ export const payload: Payload = {
     },
     {
       name: 'Experience',
+      hidden: true,
       children: [
         {
           name: 'Kakao Tech Campus',
@@ -52,6 +53,7 @@ export const payload: Payload = {
     },
     {
       name: 'Awards',
+      hidden: true,
       children: [
         {
           name: 'NTIS Information Utilization',
