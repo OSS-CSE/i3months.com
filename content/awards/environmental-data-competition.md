@@ -11,6 +11,7 @@ prize: 'Grand Prize'
 
 Planned "CEAP (Carbon Emission Analysis Platform)" a platform for analyzing company-specific carbon emissions using greenhouse gas data.
 
-<img src="/images/docs/awards/CEAP.png" alt="CEAP Platform" style="margin-top: 20px;" />
-
-<img src="/images/docs/awards/CEAP2.png" alt="CEAP Platform Dashboard" style="margin-top: 20px;" />
+<div style="display: flex; gap: 10px; margin-top: 20px;">
+  <img src="/images/docs/awards/CEAP.png" alt="CEAP Platform" style="width: 50%; object-fit: contain;" />
+  <img src="/images/docs/awards/CEAP2.png" alt="CEAP Platform Dashboard" style="width: 50%; object-fit: contain;" />
+</div>
