@@ -10,6 +10,7 @@ export const payload: Payload = {
     description: 'Software Engineer Joonmo Jeong. Interested in Robust Architecture.',
     favicon: '/images/icons/favicon.svg',
     baseUrl: 'https://i3months.com',
+    defaultLanguage: 'ko',
     seo: {
       openGraph: {
         title: 'Joonmo Jeong - Software Engineer',
@@ -62,6 +63,11 @@ export const payload: Payload = {
       name: 'Awards',
       hidden: true,
       children: [
+        {
+          name: 'Kakao Tech Campus Top Performance',
+          path: 'awards/kakao-tech-campus-top-performance',
+          hidden: true,
+        },
         {
           name: 'NTIS Information Utilization',
           path: 'awards/ntis-information-utilization',

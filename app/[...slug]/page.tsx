@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   try {
-    const { frontmatter } = await parseMarkdownFile(path);
+    const { frontmatter } = await parseMarkdownFile(path, payload.global.defaultLanguage);
 
     const title = (frontmatter.title as string) || payload.global.title;
     const description = (frontmatter.description as string) || payload.global.description;
@@ -82,7 +82,7 @@ export async function generateStaticParams() {
 
   for (const path of paths) {
     try {
-      await parseMarkdownFile(path);
+      await parseMarkdownFile(path, payload.global.defaultLanguage);
       validPaths.push(path);
     } catch (error) {
       console.error(
@@ -107,7 +107,7 @@ export async function generateStaticParams() {
  */
 async function MarkdownContent({ path, hash }: { path: string; hash: string }) {
   try {
-    const { content, frontmatter } = await parseMarkdownFile(path);
+    const { content, frontmatter } = await parseMarkdownFile(path, payload.global.defaultLanguage);
     const baseUrl = payload.global.baseUrl || 'https://example.com';
     const canonicalUrl = `${baseUrl}/${hash}`;
     const hasMath = content.includes('$') || content.includes('\\[') || content.includes('\\(');

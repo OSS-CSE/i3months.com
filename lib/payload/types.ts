@@ -28,6 +28,8 @@ export interface GlobalConfig {
   favicon?: string;
   /** Base URL for the site */
   baseUrl?: string;
+  /** Default language for content (e.g., 'en', 'ko') */
+  defaultLanguage?: string;
   /** SEO metadata */
   seo?: {
     openGraph?: {
