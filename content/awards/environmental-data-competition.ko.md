@@ -9,7 +9,7 @@ prize: '대상'
 
 <img src="/images/docs/awards/ecothon.png" alt="Environmental Data Competition" style="margin-bottom: 10px;" />
 
-온실가스 배출 데이터를 활용하여 기업별 탄소 배출량을 분석하는 플랫폼 "CEAP (Carbon Emission Analysis Platform)"을 개발했습니다.
+온실가스 배출 데이터를 활용하여 기업별 탄소 배출량을 분석하는 플랫폼 "CEAP (Carbon Emission Analysis Platform)"을 개발했습니다.  
 데이터 분석 모델의 창의성과 비즈니스 모델의 구체성을 인정받아 대상(환경부장관상)을 수상했습니다.
 
 ---

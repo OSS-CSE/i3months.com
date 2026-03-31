@@ -8,7 +8,7 @@ favicon: /images/icons/kakaotechcampus.ico
 
 # 카카오테크캠퍼스
 
-카카오테크캠퍼스 3기에 참여하여 최종 발표 및 UniScope 프로젝트를 진행했습니다.
+카카오테크캠퍼스 3기에 참여하여 최종 발표 및 UniScope 프로젝트를 진행했습니다.  
 프론트엔드 트랙에서 Top Performance Award를 수상했습니다.
 
 🔗 [GitHub Repository](https://github.com/kakao-tech-campus-3rd-step3/Team21_FE)
