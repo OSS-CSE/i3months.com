@@ -5,7 +5,7 @@ order: 1
 ---
 
 <div align="center">
-  <img src="/images/docs/intro/profile.jpeg" alt="Profile" width="200" style="border-radius: 50%; margin-bottom: 20px;" />
+  <img src="/images/docs/intro/profile.jpeg" alt="Profile" style="width: 200px; height: 200px; object-fit: cover; border-radius: 50%; margin-bottom: 20px;" />
 </div>
 
 <div align="center">
