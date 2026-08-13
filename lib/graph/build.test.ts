@@ -1,0 +1,177 @@
+import { describe, it, expect } from 'vitest';
+import { getBacklinks, getLinkGraph, getLocalGraph } from './build';
+import { getSite } from '../site';
+
+describe('getLinkGraph', () => {
+  it('includes every visible page as a node', () => {
+    const { nodes } = getLinkGraph();
+    const { docPaths, hiddenPaths } = getSite();
+
+    expect(nodes).toHaveLength(docPaths.length - hiddenPaths.size);
+  });
+
+  it('excludes hidden pages from nodes and edges', () => {
+    const { nodes, edges } = getLinkGraph();
+    const { hiddenPaths } = getSite();
+
+    expect(hiddenPaths.size).toBeGreaterThan(0);
+
+    for (const hidden of hiddenPaths) {
+      expect(nodes.some((node) => node.path === hidden)).toBe(false);
+      expect(edges.some((edge) => edge.from === hidden || edge.to === hidden)).toBe(false);
+    }
+  });
+
+  it('finds edges from ordinary Markdown links', () => {
+    const { edges, nodes } = getLinkGraph();
+
+    // This site's pages link outward rather than to each other, so there may
+    // be no edges at all. What must hold is that any edge found joins two
+    // pages the graph actually knows.
+    const paths = new Set(nodes.map((node) => node.path));
+
+    expect(edges.every((edge) => paths.has(edge.from) && paths.has(edge.to))).toBe(true);
+  });
+
+  it('keeps backlinks consistent with edges', () => {
+    const { edges, backlinks } = getLinkGraph();
+
+    for (const edge of edges) {
+      expect(backlinks.get(edge.to)).toContain(edge.from);
+    }
+
+    for (const [target, sources] of backlinks) {
+      for (const source of sources) {
+        expect(edges.some((edge) => edge.from === source && edge.to === target)).toBe(true);
+      }
+    }
+  });
+
+  it('keeps outbound consistent with edges', () => {
+    const { edges, outbound } = getLinkGraph();
+
+    for (const edge of edges) {
+      expect(outbound.get(edge.from)).toContain(edge.to);
+    }
+  });
+
+  it('never records a page as linking to itself', () => {
+    const { edges } = getLinkGraph();
+
+    expect(edges.some((edge) => edge.from === edge.to)).toBe(false);
+  });
+
+  it('records no duplicate edges', () => {
+    const { edges } = getLinkGraph();
+    const keys = edges.map((edge) => `${edge.from}->${edge.to}`);
+
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it('gives degree matching the number of incident edges', () => {
+    const { nodes, edges } = getLinkGraph();
+
+    for (const node of nodes) {
+      const incident = edges.filter(
+        (edge) => edge.from === node.path || edge.to === node.path,
+      ).length;
+
+      expect(node.degree).toBe(incident);
+    }
+  });
+
+  it('reports no unresolved links in the shipped content', () => {
+    // The repository's own pages should not contain dangling references; this
+    // is what makes the check meaningful as a build step.
+    expect(getLinkGraph().broken).toEqual([]);
+  });
+
+  it('memoises the graph', () => {
+    expect(getLinkGraph()).toBe(getLinkGraph());
+  });
+});
+
+describe('getBacklinks', () => {
+  it('returns the pages that link to a target', () => {
+    const { edges } = getLinkGraph();
+    const edge = edges[0];
+
+    // Nothing to assert on a site whose pages do not link to one another.
+    if (!edge) return;
+
+    const sources = getBacklinks(edge.to).map((node) => node.path);
+    expect(sources).toContain(edge.from);
+  });
+
+  it('returns an empty list for a page nothing links to', () => {
+    expect(getBacklinks('does-not-exist')).toEqual([]);
+  });
+
+  it('sorts results by title', () => {
+    const { backlinks } = getLinkGraph();
+    const busiest = [...backlinks.entries()].sort((a, b) => b[1].length - a[1].length)[0];
+
+    if (!busiest || busiest[1].length < 2) return;
+
+    const titles = getBacklinks(busiest[0]).map((node) => node.title);
+    expect(titles).toEqual([...titles].sort((a, b) => a.localeCompare(b)));
+  });
+});
+
+describe('getLocalGraph', () => {
+  it('centres on the page and includes its neighbours', () => {
+    const { edges } = getLinkGraph();
+    const centre = edges[0]?.from;
+
+    // A page with a neighbour is needed to centre on; this site may have none.
+    if (!centre) return;
+
+    const { nodes } = getLocalGraph(centre);
+
+    expect(nodes.some((node) => node.path === centre)).toBe(true);
+    expect(nodes.length).toBeGreaterThan(1);
+  });
+
+  // A fan of unconnected dots would say less than the backlinks list already
+  // does; the point is seeing how the neighbours relate to each other.
+  it('keeps links between neighbours, not only those touching the page', () => {
+    const graph = getLinkGraph();
+
+    // Needs a page whose neighbours also link to each other. Without one the
+    // property has nothing to be true of.
+    const centre = [...graph.outbound.entries()].find(([, targets]) =>
+      targets.some((target) => (graph.outbound.get(target) ?? []).length > 0),
+    )?.[0];
+
+    if (!centre) return;
+
+    const { nodes, edges } = getLocalGraph(centre);
+    const paths = new Set(nodes.map((node) => node.path));
+
+    expect(edges.length).toBeGreaterThan(0);
+    expect(edges.every((edge) => paths.has(edge.from) && paths.has(edge.to))).toBe(true);
+    expect(edges.some((edge) => edge.from !== centre && edge.to !== centre)).toBe(true);
+  });
+
+  it('stays within one link of the page', () => {
+    const graph = getLinkGraph();
+    const centre = graph.edges[0]?.from;
+
+    if (!centre) return;
+
+    const local = getLocalGraph(centre);
+
+    const neighbours = new Set([
+      centre,
+      ...(graph.outbound.get(centre) ?? []),
+      ...(graph.backlinks.get(centre) ?? []),
+    ]);
+
+    expect(local.nodes.every((node) => neighbours.has(node.path))).toBe(true);
+    expect(local.nodes.length).toBeLessThan(graph.nodes.length);
+  });
+
+  it('returns nothing for a page with no links either way', () => {
+    expect(getLocalGraph('no/such/page')).toEqual({ nodes: [], edges: [] });
+  });
+});

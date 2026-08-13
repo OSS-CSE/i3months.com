@@ -5,54 +5,23 @@
 /* Import theme CSS variables */
 @import '../styles/theme.css';
 
-/* SUITE Font Family - Only load commonly used weights */
-@font-face {
-  font-family: 'SUITE';
-  font-weight: 400;
-  src: url('/fonts/SUITE/SUITE-Regular.woff2') format('woff2');
-  font-display: swap;
-}
+/* Styles for build-time rendered Markdown */
+@import '../styles/markdown.css';
 
-@font-face {
-  font-family: 'SUITE';
-  font-weight: 600;
-  src: url('/fonts/SUITE/SUITE-SemiBold.woff2') format('woff2');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'SUITE';
-  font-weight: 700;
-  src: url('/fonts/SUITE/SUITE-Bold.woff2') format('woff2');
-  font-display: swap;
-}
-
-/* Pretendard Font Family - Only load commonly used weights */
-@font-face {
-  font-family: 'Pretendard';
-  font-weight: 400;
-  src: url('/fonts/Pretandard/Pretendard-Regular.woff2') format('woff2');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Pretendard';
-  font-weight: 600;
-  src: url('/fonts/Pretandard/Pretendard-SemiBold.woff2') format('woff2');
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Pretendard';
-  font-weight: 700;
-  src: url('/fonts/Pretandard/Pretendard-Bold.woff2') format('woff2');
-  font-display: swap;
-}
+/*
+ * `@font-face` for Pretendard is declared in `app/layout.tsx`, not here: the
+ * font URLs need the deployment base path prefixed, which a stylesheet cannot
+ * read. See FONT_FACES there, which also splits each weight by `unicode-range`
+ * so a page fetches only the character sets it uses.
+ */
 
 body {
+  /* SUITE used to sit between Pretendard and the system stack. Pretendard
+     covers Latin and Korean, so nothing ever reached it except the emoji in
+     section names — which it has no glyphs for either, and which the platform
+     emoji font renders. It was 274 kB nobody saw. */
   font-family:
     'Pretendard',
-    'SUITE',
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
@@ -70,10 +39,55 @@ html {
   scroll-behavior: smooth;
 }
 
-@media (max-width: 768px) {
-  button,
-  a {
-    min-height: 44px;
-    min-width: 44px;
+/* The page fade, run by `PageTransition` on arrival. Keyed on the path there,
+   so the element is replaced on a route change and this starts again.
+
+   Only opacity moves. The article beneath can be fifteen thousand pixels tall,
+   and opacity is the one property the compositor can animate without going
+   back to layout for any of it. */
+@keyframes ezw-page-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }
+
+.ezw-page-enter {
+  animation: ezw-page-enter 140ms ease-out;
+}
+
+/*
+ * Motion is a preference, and the operating system already knows the answer.
+ *
+ * Smooth scrolling is the one that matters most here: a reader who has asked
+ * for less motion and then clicks a contents link is sent gliding through
+ * fifteen thousand pixels of article, which is the exact thing the setting
+ * exists to prevent. The jump is instant instead, and the page arrives rather
+ * than fading in.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .ezw-page-enter {
+    animation: none;
+  }
+}
+
+/*
+ * Touch targets are sized per control rather than floored here.
+ *
+ * A blanket `min-height: 44px; min-width: 44px` on every `a` and `button`
+ * below 768px used to stand in this place. It did nothing for the controls —
+ * measured without it, the smallest is 36×36, comfortably past the 24×24
+ * WCAG 2.2 asks — and a great deal to the small ones that are not controls at
+ * all: a flex item is blockified, so each tag on a page became a 44px box
+ * with a word adrift in it.
+ *
+ * What it was protecting is now stated where the target is, which is also the
+ * only place that can tell a chip from a paragraph link.
+ */

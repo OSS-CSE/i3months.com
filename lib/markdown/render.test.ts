@@ -1,0 +1,459 @@
+import { describe, it, expect, vi } from 'vitest';
+import { renderDoc, renderMarkdown } from './render';
+
+/**
+ * Rendering under the `path` URL strategy.
+ *
+ * Mocked rather than inherited: this site publishes under `hash`, and these
+ * tests describe the shared behaviour in the readable form, so they must not
+ * change meaning when the site changes how it addresses its pages.
+ * `render.hash.test.ts` covers what `hash` does differently.
+ */
+vi.mock('@/payload/config', async () => {
+  const actual = await vi.importActual<typeof import('@/payload/config')>('@/payload/config');
+  return {
+    ...actual,
+    payload: {
+      ...actual.payload,
+      global: { ...actual.payload.global, urlStrategy: 'path' },
+    },
+  };
+});
+
+describe('renderMarkdown', () => {
+  it('renders headings with anchor ids and collects them', async () => {
+    const { html, headings } = await renderMarkdown('# Title\n\n## Setup\n\n### Details\n');
+
+    expect(html).toContain('id="setup"');
+    expect(headings).toEqual([
+      { id: 'setup', text: 'Setup', depth: 2 },
+      { id: 'details', text: 'Details', depth: 3 },
+    ]);
+  });
+
+  it('excludes h1 from the table of contents', async () => {
+    const { headings } = await renderMarkdown('# Page Title\n\n## Section\n');
+
+    expect(headings.map((heading) => heading.text)).toEqual(['Section']);
+  });
+
+  it('wraps code blocks with a language label and copy button', async () => {
+    const { html } = await renderMarkdown('```typescript\nconst x = 1;\n```\n');
+
+    expect(html).toContain('class="ezw-code"');
+    expect(html).toContain('data-language="typescript"');
+    expect(html).toContain('data-ezw-copy');
+    expect(html).toContain('>typescript<');
+  });
+
+  it('labels a fence with no language as text', async () => {
+    const { html } = await renderMarkdown('```\nplain\n```\n');
+
+    expect(html).toContain('data-language="text"');
+  });
+
+  it('shows a fence’s title in place of its language', async () => {
+    const { html } = await renderMarkdown('```ts title="src/index.ts"\nconst x = 1;\n```\n');
+
+    expect(html).toContain('class="ezw-code__title">src/index.ts<');
+    // The language is still recorded, just not spelled out beside a filename
+    // that already says more than it does.
+    expect(html).toContain('data-language="ts"');
+    expect(html).not.toContain('ezw-code__lang');
+  });
+
+  it('marks the lines a fence named', async () => {
+    const { html } = await renderMarkdown('```ts {2}\nconst a = 1;\nconst b = 2;\n```\n');
+
+    const lines = html.split('class="line');
+
+    expect(lines[1]).not.toContain('ezw-line--marked');
+    expect(lines[2]).toContain('ezw-line--marked');
+  });
+
+  it('asks the stylesheet for line numbers rather than emitting them', async () => {
+    const { html } = await renderMarkdown('```ts showLineNumbers\nconst a = 1;\n```\n');
+
+    expect(html).toContain('ezw-code--numbered');
+    // Numbers in the markup would be copied along with the code.
+    expect(html).not.toContain('>1<');
+  });
+
+  it('keeps a fence’s meta out of the page', async () => {
+    // It exists only to survive `rehypeRaw` on the way to the highlighter.
+    const { html } = await renderMarkdown('```ts title="a.ts" {1}\nconst a = 1;\n```\n');
+
+    expect(html).not.toContain('metastring');
+  });
+
+  it('leaves a plain fence exactly as it was', async () => {
+    const { html } = await renderMarkdown('```ts\nconst a = 1;\n```\n');
+
+    expect(html).toContain('class="ezw-code"');
+    expect(html).not.toContain('ezw-code--numbered');
+    expect(html).not.toContain('ezw-line--marked');
+  });
+
+  it('highlights code with both themes as CSS variables', async () => {
+    const { html } = await renderMarkdown('```js\nconst x = 1;\n```\n');
+
+    expect(html).toContain('--shiki-light');
+    expect(html).toContain('--shiki-dark');
+    // With defaultColor disabled neither theme is baked in as a plain colour.
+    expect(html).not.toMatch(/<pre[^>]*style="[^"]*(?<!-)color:\s*#/);
+  });
+
+  it('does not fail the build on an unknown code language', async () => {
+    const { html } = await renderMarkdown('```not-a-real-language\nx\n```\n');
+
+    expect(html).toContain('class="ezw-code"');
+  });
+
+  it('rewrites internal links to site URLs', async () => {
+    const { html } = await renderMarkdown('[카카오테크캠퍼스](experience/kakao-tech-campus)\n');
+
+    expect(html).toContain('href="/experience/kakao-tech-campus/"');
+  });
+
+  it('resolves internal links written with a .md extension or leading slash', async () => {
+    const { html } = await renderMarkdown(
+      '[a](/experience/kakao-tech-campus) [b](experience/kakao-tech-campus.md)\n',
+    );
+
+    expect(html.match(/href="\/experience\/kakao-tech-campus\/"/g)).toHaveLength(2);
+  });
+
+  // `trailingSlash` is on, so this is the form the page is exported under. A
+  // slashless link is a redirect on hosts that add the slash, and a 404 on
+  // hosts that do not.
+  it('emits internal links in the trailing-slash form the export uses', async () => {
+    const { html } = await renderMarkdown('[a](experience/kakao-tech-campus)\n');
+
+    expect(html).toContain('href="/experience/kakao-tech-campus/"');
+    expect(html).not.toMatch(/href="\/experience\/kakao-tech-campus"/);
+  });
+
+  it('preserves the anchor when resolving an internal link', async () => {
+    const { html } = await renderMarkdown('[Step](experience/kakao-tech-campus#기술-스택)\n');
+
+    // A non-ASCII heading id is percent-encoded on its way into the href.
+    const anchor = encodeURIComponent('기술-스택');
+
+    expect(html).toContain(`href="/experience/kakao-tech-campus/#${anchor}"`);
+  });
+
+  it('leaves in-page anchors alone', async () => {
+    const { html } = await renderMarkdown('## Setup\n\n[Jump](#setup)\n');
+
+    expect(html).toContain('href="#setup"');
+  });
+
+  it('leaves unresolvable internal links as authored', async () => {
+    const { html } = await renderMarkdown('[Missing](no/such/page)\n');
+
+    expect(html).toContain('href="no/such/page"');
+  });
+
+  it('opens external links in a new tab with a safe rel', async () => {
+    const { html } = await renderMarkdown('[Next.js](https://nextjs.org)\n');
+
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('rel="noopener noreferrer"');
+  });
+
+  it('renders GitHub Flavored Markdown tables and task lists', async () => {
+    const { html } = await renderMarkdown('| a | b |\n| - | - |\n| 1 | 2 |\n\n- [x] done\n');
+
+    expect(html).toContain('<table>');
+    expect(html).toContain('type="checkbox"');
+  });
+
+  it('renders math with KaTeX', async () => {
+    const { html } = await renderMarkdown('$E = mc^2$\n');
+
+    expect(html).toContain('katex');
+  });
+
+  it('keeps raw HTML written inside Markdown', async () => {
+    const { html } = await renderMarkdown('<div class="custom">hello</div>\n');
+
+    expect(html).toContain('<div class="custom">hello</div>');
+  });
+
+  // The opening figure is usually what the browser measures as the largest
+  // contentful paint, and deferring it keeps the request out of the preload
+  // scan, so it is fetched eagerly while the images below it still defer.
+  it('fetches the first image eagerly and defers the rest', async () => {
+    const { html } = await renderMarkdown('![one](/images/a.png)\n\n![two](/images/b.png)\n');
+
+    const [first, second] = html.match(/<img[^>]*>/g) ?? [];
+
+    expect(first).toContain('loading="eager"');
+    expect(first).toContain('fetchpriority="high"');
+    expect(second).toContain('loading="lazy"');
+    expect(second).not.toContain('fetchpriority');
+  });
+
+  it('adds the styling hook to every image', async () => {
+    const { html } = await renderMarkdown('![alt](/images/x.png)\n');
+
+    expect(html).toContain('ezw-img');
+  });
+});
+
+describe('renderDoc', () => {
+  it('renders a document from the content registry', async () => {
+    const rendered = await renderDoc('intro');
+
+    expect(rendered).not.toBeNull();
+    expect(rendered!.html.length).toBeGreaterThan(0);
+  });
+
+  it('memoises repeated renders of the same document', async () => {
+    expect(await renderDoc('intro')).toBe(await renderDoc('intro'));
+  });
+
+  it('returns null for a document that does not exist', async () => {
+    expect(await renderDoc('does-not-exist')).toBeNull();
+  });
+});
+
+describe('wiki links', () => {
+  it('resolves a full path', async () => {
+    const { html } = await renderMarkdown('[[experience/kakao-tech-campus]]\n');
+
+    expect(html).toContain('href="/experience/kakao-tech-campus/"');
+    expect(html).toContain('ezw-wikilink');
+    // With no label, the target's own title is used as the link text.
+    expect(html).toContain('>카카오테크캠퍼스<');
+  });
+
+  it('resolves a bare file name', async () => {
+    const { html } = await renderMarkdown('[[kakao-tech-campus]]\n');
+
+    expect(html).toContain('href="/experience/kakao-tech-campus/"');
+  });
+
+  it('resolves a page title', async () => {
+    const { html } = await renderMarkdown('[[카카오테크캠퍼스]]\n');
+
+    expect(html).toContain('href="/experience/kakao-tech-campus/"');
+  });
+
+  it('uses an explicit label', async () => {
+    const { html } = await renderMarkdown('[[kakao-tech-campus|start here]]\n');
+
+    expect(html).toContain('>start here<');
+  });
+
+  it('appends an anchor', async () => {
+    const { html } = await renderMarkdown('[[kakao-tech-campus#기술-스택]]\n');
+
+    const anchor = encodeURIComponent('기술-스택');
+
+    expect(html).toContain(`href="/experience/kakao-tech-campus/#${anchor}"`);
+  });
+
+  it('links an anchor-only reference within the page', async () => {
+    const { html } = await renderMarkdown('## Setup\n\n[[#setup]]\n');
+
+    expect(html).toContain('href="#setup"');
+  });
+
+  it('marks an unresolved link as broken instead of linking nowhere', async () => {
+    const { html } = await renderMarkdown('[[no-such-page]]\n');
+
+    expect(html).toContain('ezw-broken-link');
+    expect(html).not.toContain('href="/no-such-page"');
+    expect(html).toContain('>no-such-page<');
+  });
+
+  it('leaves wiki links inside code untouched', async () => {
+    const inline = await renderMarkdown('Use `[[kakao-tech-campus]]` to link.\n');
+    const fenced = await renderMarkdown('```\n[[kakao-tech-campus]]\n```\n');
+
+    expect(inline.html).not.toContain('ezw-wikilink');
+    expect(inline.html).toContain('[[kakao-tech-campus]]');
+    expect(fenced.html).not.toContain('ezw-wikilink');
+  });
+
+  it('handles several links in one paragraph with text between them', async () => {
+    const { html } = await renderMarkdown('See [[intro]] and then [[kakao-tech-campus]] next.\n');
+
+    expect(html).toContain('href="/intro/"');
+    expect(html).toContain('href="/experience/kakao-tech-campus/"');
+    expect(html).toContain('See ');
+    expect(html).toContain(' and then ');
+    expect(html).toContain(' next.');
+  });
+
+  it('leaves unmatched brackets as literal text', async () => {
+    const { html } = await renderMarkdown('An array like [[1, 2], [3]] stays put.\n');
+
+    expect(html).not.toContain('ezw-wikilink');
+    expect(html).not.toContain('ezw-broken-link');
+  });
+});
+
+describe('embeds', () => {
+  it('renders an embedded image from a bare filename', async () => {
+    const { html } = await renderMarkdown('![[profile.jpeg]]\n');
+
+    expect(html).toContain('<img');
+    expect(html).toContain('src="/images/docs/intro/profile.jpeg"');
+    expect(html).toContain('ezw-img');
+  });
+
+  it('accepts the full path under public/', async () => {
+    const { html } = await renderMarkdown('![[images/docs/intro/profile.jpeg]]\n');
+
+    expect(html).toContain('src="/images/docs/intro/profile.jpeg"');
+  });
+
+  it('uses the label as alt text', async () => {
+    const { html } = await renderMarkdown('![[profile.jpeg|A profile]]\n');
+
+    expect(html).toContain('alt="A profile"');
+  });
+
+  // Without the embed the `!` would survive as literal text ahead of a link,
+  // which is how this read before embeds were understood.
+  it('leaves no stray exclamation mark', async () => {
+    const { html } = await renderMarkdown('![[profile.jpeg]]\n');
+
+    expect(html).not.toContain('>!<');
+    expect(html).not.toMatch(/!\s*<img/);
+  });
+
+  it('still links when the embed names a page rather than a file', async () => {
+    const { html } = await renderMarkdown('![[kakao-tech-campus]]\n');
+
+    expect(html).toContain('href="/experience/kakao-tech-campus/"');
+  });
+
+  it('marks an embed that matches nothing as broken', async () => {
+    const { html } = await renderMarkdown('![[no-such-file.png]]\n');
+
+    expect(html).toContain('ezw-broken-link');
+  });
+});
+
+describe('transclusion', () => {
+  it('includes a whole document when the embed is alone in its paragraph', async () => {
+    const { html } = await renderMarkdown('![[kakao-tech-campus]]\n');
+
+    expect(html).toContain('ezw-transclusion');
+    expect(html).toContain('기술 스택');
+  });
+
+  it('attributes the content to the page it came from', async () => {
+    const { html } = await renderMarkdown('![[kakao-tech-campus]]\n');
+
+    expect(html).toContain('ezw-transclusion__source');
+    expect(html).toContain('href="/experience/kakao-tech-campus/"');
+  });
+
+  it('includes only the named section', async () => {
+    const whole = await renderMarkdown('![[kakao-tech-campus]]\n');
+    const section = await renderMarkdown('![[kakao-tech-campus#기술-스택]]\n');
+
+    expect(section.html).toContain('ezw-transclusion');
+    expect(section.html).toContain('기술 스택');
+    expect(section.html.length).toBeLessThan(whole.html.length / 2);
+    // The section stops at the next heading of the same level.
+    expect(section.html).not.toContain('프로젝트 소개');
+  });
+
+  // Blocks cannot sit inside a paragraph, and an embed among prose is being
+  // used as a reference rather than as an inclusion.
+  it('stays a link when the embed shares its paragraph with text', async () => {
+    const { html } = await renderMarkdown('see ![[kakao-tech-campus]] here\n');
+
+    expect(html).not.toContain('ezw-transclusion');
+    expect(html).toContain('ezw-wikilink');
+  });
+
+  it('falls back to a link when the named section does not exist', async () => {
+    const { html } = await renderMarkdown('![[kakao-tech-campus#no-such-section]]\n');
+
+    expect(html).not.toContain('ezw-transclusion');
+    expect(html).toContain('href="/experience/kakao-tech-campus/#no-such-section"');
+  });
+
+  // Rendering a copy of the page inside itself would not terminate.
+  it('refuses a document that includes itself', async () => {
+    const { html } = await renderMarkdown(
+      '![[kakao-tech-campus]]\n',
+      'experience/kakao-tech-campus',
+    );
+
+    expect(html).not.toContain('ezw-transclusion');
+    expect(html).toContain('ezw-wikilink');
+  });
+
+  // The contents describe the page a reader is on, not the pages it borrows.
+  it('keeps transcluded headings out of the table of contents', async () => {
+    const { headings } = await renderMarkdown('## Mine\n\n![[kakao-tech-campus]]\n');
+
+    expect(headings.map((heading) => heading.text)).toEqual(['Mine']);
+  });
+});
+
+describe('link previews', () => {
+  // The card's contents ride on the anchor so hovering costs no request.
+  it('carries the target title and summary on the link', async () => {
+    const { html } = await renderMarkdown('[[kakao-tech-campus]]\n');
+
+    expect(html).toContain('data-preview-title="카카오테크캠퍼스"');
+    expect(html).toMatch(/data-preview="[^"]+"/);
+  });
+
+  it('leaves a broken link without preview data', async () => {
+    const { html } = await renderMarkdown('[[no-such-page]]\n');
+
+    expect(html).not.toContain('data-preview');
+  });
+});
+
+describe('heading anchors', () => {
+  it('gives each heading a link to itself', async () => {
+    const { html } = await renderMarkdown('## Setup steps\n');
+
+    expect(html).toContain('class="ezw-heading__anchor"');
+    expect(html).toContain('href="#setup-steps"');
+  });
+
+  // The page URL already addresses the page; a link to its own title would
+  // point at where the reader is.
+  it('leaves the title heading alone', async () => {
+    const { html } = await renderMarkdown('# Title\n\n## Section\n');
+    const title = html.match(/<h1[\s\S]*?<\/h1>/)?.[0] ?? '';
+
+    expect(title).not.toContain('ezw-heading__anchor');
+    expect(html.match(/<h2[\s\S]*?<\/h2>/)?.[0]).toContain('ezw-heading__anchor');
+  });
+
+  // Without a name of its own a screen reader hears every heading trailed by
+  // a stray "#".
+  it('names the anchor after the section it links to', async () => {
+    const { html } = await renderMarkdown('## Setup steps\n');
+
+    expect(html).toContain('aria-label="Link to this section: Setup steps"');
+  });
+
+  // Collection runs first, so the anchor's own text never reaches the rail.
+  it('keeps the anchor out of the contents', async () => {
+    const { headings } = await renderMarkdown('## Setup\n\n### Deep\n');
+
+    expect(headings.map((heading) => heading.text)).toEqual(['Setup', 'Deep']);
+  });
+
+  // A transcluded heading's id belongs to the page it came from; linking it
+  // here would send a reader to a copy.
+  it('leaves transcluded headings unanchored', async () => {
+    const { html } = await renderMarkdown('![[intro]]\n');
+    const transcluded = html.match(/<div class="ezw-transclusion">[\s\S]*?<\/div>/)?.[0] ?? '';
+
+    expect(transcluded).not.toContain('ezw-heading__anchor');
+  });
+});

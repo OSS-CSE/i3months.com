@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { NavigationItem } from '@/lib/payload/types';
 import { useTabStore } from '@/lib/store/tabStore';
-import { resolvePathToHash } from '@/lib/navigation/hash';
+import { useUrlMap } from '@/components/providers/UrlMapProvider';
 import { filterHiddenItems } from '@/lib/navigation/builder';
+import { Github } from 'lucide-react';
+import { useStrings } from '@/components/providers/StringsProvider';
 
 /**
  * Props for the MobileMenu component
@@ -18,6 +20,8 @@ interface MobileMenuProps {
   isOpen: boolean;
   /** Callback function to close the menu */
   onClose: () => void;
+  /** Source repository, linked from the drawer header when configured */
+  repoUrl?: string;
 }
 
 /**
@@ -34,8 +38,6 @@ interface MobileNavigationItemProps {
   onNavigate: () => void;
   /** Background color inherited from parent */
   backgroundColor?: string;
-  /** Full navigation tree for hash resolution */
-  navigation: NavigationItem[];
 }
 
 /**
@@ -62,10 +64,10 @@ function MobileNavigationItem({
   level,
   onNavigate,
   backgroundColor,
-  navigation,
 }: MobileNavigationItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const router = useRouter();
+  const { href: urlFor } = useUrlMap();
   const { activeTabId, tabs, addTab } = useTabStore();
   const hasChildren = item.children && item.children.length > 0;
   const isActive = item.path === currentPath;
@@ -115,9 +117,7 @@ function MobileNavigationItem({
         addTab({ title: item.name, path: item.path });
       }
 
-      // Convert path to hash for URL
-      const hash = resolvePathToHash(item.path, navigation);
-      router.replace(`/${hash}`);
+      router.replace(urlFor(item.path));
       onNavigate();
     }
   };
@@ -134,7 +134,10 @@ function MobileNavigationItem({
                 : ''
             }`}
             style={bgColor ? { color: textColor, ...getLeftMarginStyle() } : getLeftMarginStyle()}
-            aria-label={isExpanded ? 'Collapse' : 'Expand'}
+            // No aria-label: this button already contains the section name, and
+            // labelling it "Expand" replaced that name rather than adding to it,
+            // leaving every section announced identically. `aria-expanded`
+            // carries the state on its own.
             aria-expanded={isExpanded}
           >
             <svg
@@ -153,7 +156,7 @@ function MobileNavigationItem({
           </button>
         ) : item.path ? (
           <Link
-            href={`/${resolvePathToHash(item.path, navigation)}`}
+            href={urlFor(item.path)}
             onClick={handleLinkClick}
             className={`flex-1 px-2 py-1 rounded-md text-sm transition-colors touch-manipulation ${
               isActive
@@ -200,7 +203,6 @@ function MobileNavigationItem({
               level={level + 1}
               onNavigate={onNavigate}
               backgroundColor={bgColor}
-              navigation={navigation}
             />
           ))}
         </div>
@@ -223,9 +225,15 @@ function MobileNavigationItem({
  * @param props.onClose - Callback function to close the menu
  *
  */
-export function MobileMenu({ navigation, isOpen, onClose }: MobileMenuProps) {
+export function MobileMenu({ navigation, isOpen, onClose, repoUrl }: MobileMenuProps) {
+  const t = useStrings();
   const pathname = usePathname();
-  const currentPath = pathname === '/' ? '' : pathname.slice(1);
+  const { toPath } = useUrlMap();
+
+  // Resolve through the URL map rather than trimming the pathname: the URL is
+  // a hash under one strategy and carries a trailing slash under the other, and
+  // neither form would ever equal a content path.
+  const currentPath = toPath(pathname) ?? '';
 
   // Filter out hidden items
   const visibleNavigation = filterHiddenItems(navigation);
@@ -264,10 +272,22 @@ export function MobileMenu({ navigation, isOpen, onClose }: MobileMenuProps) {
           <nav>
             <div className="flex items-center justify-between mb-1">
               <div className="flex-1" />
+              {repoUrl && (
+                <a
+                  href={repoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={t.sourceRepository}
+                  title={t.sourceRepository}
+                  className="rounded-md p-2 text-gray-500 transition-colors hover:text-gray-700 active:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:active:bg-gray-800"
+                >
+                  <Github className="h-5 w-5" />
+                </a>
+              )}
               <button
                 onClick={onClose}
                 className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 active:bg-gray-100 dark:active:bg-gray-800 rounded-md transition-colors touch-manipulation"
-                aria-label="Close menu"
+                aria-label={t.closeMenu}
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -286,7 +306,6 @@ export function MobileMenu({ navigation, isOpen, onClose }: MobileMenuProps) {
                 currentPath={currentPath}
                 level={0}
                 onNavigate={onClose}
-                navigation={navigation}
               />
             ))}
           </nav>

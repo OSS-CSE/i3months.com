@@ -1,16 +1,29 @@
 import { Payload } from '@/lib/payload/types';
 
 /**
- * Main payload configuration for eziwiki
- * This defines the site structure, navigation, and theme
+ * Site configuration.
+ *
+ * Navigation is written out below rather than discovered: this is a personal
+ * site, not a wiki, so every page but the landing page is reachable only by
+ * the links the landing page draws. See `content/configuration/navigation.md`
+ * in the upstream project for the automatic alternative.
  */
 export const payload: Payload = {
   global: {
     title: 'Joonmo Jeong - Software Engineer',
     description: 'Software Engineer Joonmo Jeong. Interested in Robust Architecture.',
     favicon: '/images/icons/favicon.svg',
+    /**
+     * The pages are written in Korean, so the interface speaks it too — the
+     * search box, the contents rail and the previous/next links.
+     */
+    lang: 'ko',
     baseUrl: 'https://i3months.com',
-    defaultLanguage: 'ko',
+    /**
+     * Opaque digests, as this site has always published. Switching to 'path'
+     * would give readable URLs but break every address already shared.
+     */
+    urlStrategy: 'hash',
     seo: {
       openGraph: {
         title: 'Joonmo Jeong - Software Engineer',
@@ -26,10 +39,9 @@ export const payload: Payload = {
       },
       twitter: {
         card: 'summary_large_image',
-        title: 'eziwiki - Beautiful Documentation Made Easy',
-        description:
-          'A beautiful, minimal wiki and documentation site generator inspired by Notion and Obsidian',
-        images: ['/og-image.svg'],
+        title: 'Joonmo Jeong - Software Engineer',
+        description: 'Software Engineer Joonmo Jeong. Interested in Robust Architecture.',
+        images: ['/images/og/og-image.svg'],
       },
     },
   },

@@ -6,7 +6,8 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useTabStore } from '@/lib/store/tabStore';
 import { NavigationItem } from '@/lib/payload/types';
 import { Breadcrumb } from './Breadcrumb';
-import { resolvePathToHash } from '@/lib/navigation/hash';
+import { useUrlMap } from '@/components/providers/UrlMapProvider';
+import { useStrings } from '@/components/providers/StringsProvider';
 
 interface NavigationButtonsProps {
   navigation: NavigationItem[];
@@ -16,7 +17,9 @@ interface NavigationButtonsProps {
  * Navigation buttons for back/forward history within tabs, combined with breadcrumb
  */
 export function NavigationButtons({ navigation }: NavigationButtonsProps) {
+  const t = useStrings();
   const router = useRouter();
+  const { href: urlFor } = useUrlMap();
   const { activeTabId, goBack, goForward, canGoBack, canGoForward } = useTabStore();
 
   const canNavigateBack = activeTabId ? canGoBack(activeTabId) : false;
@@ -27,12 +30,7 @@ export function NavigationButtons({ navigation }: NavigationButtonsProps) {
 
     const result = goBack(activeTabId);
     if (result) {
-      if (!result.path) {
-        router.replace('/');
-        return;
-      }
-      const hash = resolvePathToHash(result.path, navigation);
-      router.replace(`/${hash || ''}`);
+      router.replace(urlFor(result.path));
     }
   };
 
@@ -41,12 +39,7 @@ export function NavigationButtons({ navigation }: NavigationButtonsProps) {
 
     const result = goForward(activeTabId);
     if (result) {
-      if (!result.path) {
-        router.replace('/');
-        return;
-      }
-      const hash = resolvePathToHash(result.path, navigation);
-      router.replace(`/${hash || ''}`);
+      router.replace(urlFor(result.path));
     }
   };
 
@@ -64,8 +57,8 @@ export function NavigationButtons({ navigation }: NavigationButtonsProps) {
                 : 'text-gray-300 dark:text-gray-700 cursor-not-allowed'
             }
           `}
-          aria-label="Go back"
-          title="Go back"
+          aria-label={t.goBack}
+          title={t.goBack}
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
@@ -80,8 +73,8 @@ export function NavigationButtons({ navigation }: NavigationButtonsProps) {
                 : 'text-gray-300 dark:text-gray-700 cursor-not-allowed'
             }
           `}
-          aria-label="Go forward"
-          title="Go forward"
+          aria-label={t.goForward}
+          title={t.goForward}
         >
           <ArrowRight className="w-4 h-4" />
         </button>

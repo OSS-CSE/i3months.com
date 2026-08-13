@@ -4,57 +4,29 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { NavigationItem } from '@/lib/payload/types';
-import { resolvePathToHash, resolveHashToPath } from '@/lib/navigation/hash';
+import { useUrlMap } from '@/components/providers/UrlMapProvider';
+import { getBreadcrumbTrail } from '@/lib/navigation/breadcrumb';
 
 interface BreadcrumbProps {
   navigation: NavigationItem[];
 }
 
-/**
- * Build breadcrumb trail by finding the path through navigation tree
- */
-function buildBreadcrumbTrail(
-  items: NavigationItem[],
-  targetPath: string,
-  trail: Array<{ name: string; path?: string }> = [],
-): Array<{ name: string; path?: string }> | null {
-  for (const item of items) {
-    if (item.path === targetPath) {
-      return [...trail, { name: item.name, path: item.path }];
-    }
-
-    if (item.children) {
-      const found = buildBreadcrumbTrail(item.children, targetPath, [
-        ...trail,
-        { name: item.name, path: item.path },
-      ]);
-      if (found) return found;
-    }
-  }
-
-  return null;
-}
-
 export function Breadcrumb({ navigation }: BreadcrumbProps) {
   const pathname = usePathname();
-
-  // Remove leading and trailing slashes
-  let currentHash = pathname.startsWith('/') ? pathname.slice(1) : pathname;
-  currentHash = currentHash.endsWith('/') ? currentHash.slice(0, -1) : currentHash;
+  const { href: urlFor, toPath } = useUrlMap();
 
   // Home page - don't show breadcrumb
-  if (!currentHash) {
+  if (pathname === '/') {
     return null;
   }
 
-  // Resolve hash to actual path
-  const currentPath = resolveHashToPath(currentHash, navigation);
+  const currentPath = toPath(pathname);
 
   if (!currentPath) {
     return null;
   }
 
-  const trail = buildBreadcrumbTrail(navigation, currentPath);
+  const trail = getBreadcrumbTrail(navigation, currentPath);
 
   if (!trail || trail.length === 0) {
     return null;
@@ -79,7 +51,7 @@ export function Breadcrumb({ navigation }: BreadcrumbProps) {
             <span className="font-medium text-gray-900 dark:text-gray-100">{item.name}</span>
           ) : (
             <Link
-              href={`/${resolvePathToHash(item.path, navigation)}`}
+              href={urlFor(item.path)}
               className="hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
             >
               {item.name}
