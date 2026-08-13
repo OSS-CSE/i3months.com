@@ -15,6 +15,7 @@ import { getLastModified, getPublished } from '@/lib/content/lastModified';
 import { getEditUrl } from '@/lib/content/editUrl';
 import { getBreadcrumbTrail } from '@/lib/navigation/breadcrumb';
 import { renderDoc } from '@/lib/markdown/render';
+import { hasTableOfContents } from '@/lib/markdown/toc';
 import { getDoc, type ContentDoc } from '@/lib/content/registry';
 import { docPathToUrl, urlToDocPath } from '@/lib/navigation/url';
 import { getSite } from '@/lib/site';
@@ -274,11 +275,13 @@ export default async function ContentPage({ params }: PageProps) {
           <LocalGraph graph={getLocalGraph(resolved.path)} path={resolved.path} />
         </article>
 
-        <aside className="hidden w-56 flex-shrink-0 xl:block">
-          <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
-            <TableOfContents headings={rendered.headings} />
-          </div>
-        </aside>
+        {hasTableOfContents(rendered.headings) && (
+          <aside className="hidden w-56 flex-shrink-0 xl:block">
+            <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
+              <TableOfContents headings={rendered.headings} />
+            </div>
+          </aside>
+        )}
       </div>
     </PageTransition>
   );

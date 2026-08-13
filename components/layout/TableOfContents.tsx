@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { Heading } from '@/lib/markdown/rehype-plugins';
+import { hasTableOfContents } from '@/lib/markdown/toc';
 import { useStrings } from '@/components/providers/StringsProvider';
 
 /**
@@ -102,7 +103,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
   const t = useStrings();
   const active = useActiveHeading(headings);
 
-  if (headings.length < 2) return null;
+  if (!hasTableOfContents(headings)) return null;
 
   // Normalise depth so a document starting at h3 is not indented as if nested.
   const minDepth = Math.min(...headings.map((heading) => heading.depth));
